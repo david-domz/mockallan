@@ -63,6 +63,7 @@ def http_request_handler_class_factory(app_handler: AppHandler):
 			for key, value in response.headers.items():
 				self.send_header(key, value)
 			self.end_headers()
+
 			self.wfile.write(response.body.encode('utf-8'))
 
 	return HTTPRequestHandler
@@ -76,9 +77,9 @@ class MockHTTPServer():
 	Configurable at run time via REST API.
 
 	"""
-	def __init__(self, server_address, config_json: dict | str | None):
+	def __init__(self, server_address, stub_config_json: dict | str | None):
 
-		self._config = StubConfig(config_json)
+		self._config = StubConfig(stub_config_json)
 		app_handler = AppHandler(self._config)
 		http_request_handler_class = http_request_handler_class_factory(app_handler)
 		self._http_server = HTTPServer(server_address, http_request_handler_class)
@@ -96,7 +97,7 @@ def main():
 	argparse = ArgumentParser(description='Mock HTTP server')
 	argparse.add_argument("-H", "--host", type=str, metavar="HOST", dest="host", default="0.0.0.0")
 	argparse.add_argument("-p", "--port", type=int, metavar="PORT", dest="port", default=8080)
-	argparse.add_argument("-c", "--config", type=str, metavar="CONFIG", dest="config_json", default='stub_config.json')
+	argparse.add_argument("-c", "--stub-config", type=str, metavar="STUB_CONFIG", dest="stub_config_json")
 
 	args = argparse.parse_args()
 
@@ -104,7 +105,7 @@ def main():
 	print(f'Listening on {server_address[0]}:{server_address[1]}')
 
 	try:
-		mock_http_server = MockHTTPServer(server_address, args.config_json)
+		mock_http_server = MockHTTPServer(server_address, args.stub_config_json)
 	except FileNotFoundError as e:
 		print(f'Failed to instantiate MockHTTPServer: {e}')
 	else:

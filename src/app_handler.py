@@ -209,7 +209,7 @@ class AppHandler():
 			"detail": f"{e.__class__.__name__}: {e}"
 		}
 
-		return HTTPResponse(status, headers, body)
+		return HTTPResponse(status, headers, json.dumps(body))
 
 
 	@staticmethod
@@ -225,8 +225,7 @@ class AppHandler():
 			"status": status,
 			"type": "assertion-error",
 			"title": f"Assertion request {assert_request.method} {assert_request.path} failed",
-			"detail": f"{endpoint_called[0]} {endpoint_called[1]} expected call count was {expected_call_count} but actual call count was {call_count}.",
-			"detail_": "Query parameter {e} not found."
+			"detail": f"{endpoint_called[0]} {endpoint_called[1]} expected call count was {expected_call_count} but actual call count was {call_count}."
 		}
 
-		return HTTPResponse(status, headers, body)
+		return HTTPResponse(status, headers, json.dumps(body))
