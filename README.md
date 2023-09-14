@@ -5,24 +5,29 @@
 ## Features
 
 - Command line Interface for CI Integration: Enables seamless integration into continuous integration environments, making it ideal for automated testing workflows.
-- Mock and Stub Capabilities: Provides both mock and stub functionalities, allowing you to simulate different behaviors of HTTP endpoints.
-- Configurable Stub Responses: Offers the flexibility to configure stub responses for specific endpoints and provides a default response for all other endpoints.
+
+- Mock Assertion Capabilities: Supports assertions after running the software under test, helping you validate expected responses.
+
+- Stub Capabilities and Configurable Stub Responses: Offers the flexibility to configure stub responses for specific endpoints and provides a default response for all other endpoints.
+
 - Initialization Time Configuration: Allows you to set up stub responses using a JSON file at the time of initialization.
+
 - Runtime Configuration: Permits the dynamic configuration of stub responses during runtime by posting a JSON file. Refer to the Stub Configuration API section below for details.
-- Assertions can be done after running the software under test.
-- Assertions: Supports assertions after running the software under test, helping you validate expected responses.
+
 - Request History: Maintains a request history, allowing powerful assertion capabilities and diagnostics.
-- Stub Configuration - API and Mock Assertion API naming based on the class `Mock` from the standard python package `unittest.mock`.
-- API Naming Consistency: Adheres to a naming convention for the Stub Configuration API and Mock Assertion API, based on the Mock class from the standard Python package unittest.mock. This ensures a familiar and consistent experience for Python developers.
+
+- API Naming Consistency: Adheres to a naming convention for the Stub Configuration API and Mock Assertion API, based on the `Mock` class from the standard Python package `unittest.mock`. This ensures a familiar and consistent experience for Python developers.
+
+- Lean and Compact: It boasts a concise codebase of under 700 lines, emphasizing minimalism and optimized resource utilization.
 
 
 ## Requirements
 
 - Python >= 3.10
 
-TO DO: Move to implementation section: It uses the standard python module `http.server`.
+<!-- TO DO: Move to implementation section: It uses the standard python module `http.server`.
 TO DO: requirement or dependency?
-TO DO: jsonschema: requirement or dependency?
+TO DO: jsonschema: requirement or dependency? -->
 
 ## Installation
 
@@ -32,6 +37,55 @@ pip install mockallan
 
 ## Getting Started
 
+
+1) Run `mockallan.py`
+
+```bash
+$ python mockallan.py
+Listening on 0.0.0.0:8080
+```
+
+2) Run the software under test. Let's say it is expected to make a `POST /mockallan-reserve`.
+
+Enter the following command to simulate the software under test request.
+
+```bash
+$ curl -X POST http://localhost:8080/mockallan-reserve --data '{'foo': 'bar'}'
+```
+
+`mockallan` will reply with the default response.
+
+```bash
+{"status": "200", "message": "This is mockallan default response. Use the Stub Configuration API to configure responses per endpoint."}
+
+```
+
+3) Use `mockallan` Mock Assertion API to make assertions on the expected response.
+
+If the Mock Assertion request returns 204 then everything went fine.
+
+
+```bash
+$ curl -w %{http_code} "http://localhost:8080/assert-called-once?method=POST&path=/mockallan-reserve" ; echo
+204
+```
+
+Otherwise, if it returns 409 then the assertion failed and the software under test did not behave as expected.
+
+
+```bash
+
+$ curl "http://localhost:8080/assert-called-once?method=POST&path=/mockallan-reserve" ; echo
+
+{
+	"status": 409,
+	"type": "assertion-error",
+	"title": "Assertion request GET /assert-called-once failed",
+	"detail": "POST /mockallan-reserve expected call count was 1 but actual call count was 2."
+}
+```
+
+## Using Configurable Stub Responses
 
 1) Configure `mockallan` responses by using the Stub Configuration JSON Format.
 
@@ -55,16 +109,16 @@ E.g. `stub_config.json`
 		}
 	]
 }
-
-
 ```
 
-2) Run `mockallan.py`
+1) Run `mockallan.py`
 	- `python mockallan.py -p 8080`
 
-3) Use the Stub Configuration API to POST the configuration to the running `mockallan` instance.
+1) Use the Stub Configuration API to POST the configuration to the running `mockallan` instance.
 
-   - `curl -X POST /config --data @config.json`
+```bash
+curl -X POST /config --data @config.json
+```
 
 4) Execute the software under test.
 
@@ -72,7 +126,6 @@ E.g. `stub_config.json`
 
    - `curl -X GET /assert-called-once?method=POST&path=/path`
 
-6) If the Mock Assertion response returned 204 then everything went fine. If it returned 409 then the assertion failed and the software under test did not behave as expected.
 
 ## Running `mockallan`
 
