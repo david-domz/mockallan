@@ -1,24 +1,22 @@
-# `mockallan`- Universal HTTP Server Mock
+# `mockallan`- HTTP Server Mock
 
-`mockallan` is a universal HTTP server mock that can be used as a replacement of a production HTTP server in a test environment.
+`mockallan` is a versatile HTTP server mock designed for use as a substitute for a production HTTP server within a testing environment.
 
 ## Features
 
 - Command line Interface for CI Integration: Enables seamless integration into continuous integration environments, making it ideal for automated testing workflows.
 
-- Mock Assertion Capabilities: Supports assertions after running the software under test, helping you validate expected responses.
+- Assertion Capabilities: Provides assertion support for validating expected responses during testing.
 
-- Stub Capabilities and Configurable Stub Responses: Offers the flexibility to configure stub responses for specific endpoints and provides a default response for all other endpoints.
+- Stub Capabilities with Configurable Responses: Offers endpoint-specific response configuration and a default response for unmatched endpoints.
 
-- Initialization Time Configuration: Allows you to set up stub responses using a JSON file at the time of initialization.
+- Configuration Flexibility: Supports JSON-based stub response setup during initialization and dynamic runtime configuration. See the Stub Configuration API section below for details.
 
-- Runtime Configuration: Permits the dynamic configuration of stub responses during runtime by posting a JSON file. Refer to the Stub Configuration API section below for details.
+- History: Maintains a comprehensive request history, empowering robust assertion capabilities and diagnostics.
 
-- Request History: Maintains a request history, allowing powerful assertion capabilities and diagnostics.
+- API Naming Consistency: Adheres to naming conventions in line with the Mock class from the Python unittest.mock standard library, ensuring a consistent experience for Python developers.
 
-- API Naming Consistency: Adheres to a naming convention for the Stub Configuration API and Mock Assertion API, based on the `Mock` class from the standard Python package `unittest.mock`. This ensures a familiar and consistent experience for Python developers.
-
-- Lean and Compact: It boasts a concise codebase of under 700 lines, emphasizing minimalism and optimized resource utilization.
+- Lean and Compact: Features a concise codebase of under 1000 lines, emphasizing minimalism and efficient resource utilization.
 
 
 ## Requirements
@@ -31,8 +29,8 @@ TO DO: jsonschema: requirement or dependency? -->
 
 ## Installation
 
-```python
-pip install mockallan
+```bash
+$ pip install mockallan
 ```
 
 ## Getting Started
@@ -45,9 +43,10 @@ $ python mockallan.py
 Listening on 0.0.0.0:8080
 ```
 
-2) Run the software under test. Let's say it is expected to make a `POST /mockallan-reserve`.
+2) Run the software under test.
 
-Enter the following command to simulate the software under test request.
+Alternatively, you can enter the following command to simulate a request to the software under test. For example, if you expect the software under test to perform a `POST /mockallan-reserve`.
+
 
 ```bash
 $ curl -X POST http://localhost:8080/mockallan-reserve --data '{'foo': 'bar'}'
@@ -55,28 +54,26 @@ $ curl -X POST http://localhost:8080/mockallan-reserve --data '{'foo': 'bar'}'
 
 `mockallan` will reply with the default response.
 
-```bash
-{"status": "200", "message": "This is mockallan default response. Use the Stub Configuration API to configure responses per endpoint."}
-
+```json
+{
+	"status": "200",
+	"message": "This is mockallan default response. Use the Stub Configuration API to configure responses per endpoint."
+}
 ```
 
-3) Use `mockallan` Mock Assertion API to make assertions on the expected response.
+1) Use `mockallan` Assertion API to make assertions on the expected response.
 
-If the Mock Assertion request returns 204 then everything went fine.
+If the assertion request returns 200 then everything went fine.
 
 
 ```bash
-$ curl -w %{http_code} "http://localhost:8080/assert-called-once?method=POST&path=/mockallan-reserve" ; echo
-204
+$ curl "http://localhost:8080/assert-called-once?method=POST&path=/mockallan-reserve" ; echo
+
 ```
 
 Otherwise, if it returns 409 then the assertion failed and the software under test did not behave as expected.
 
-
-```bash
-
-$ curl "http://localhost:8080/assert-called-once?method=POST&path=/mockallan-reserve" ; echo
-
+```json
 {
 	"status": 409,
 	"type": "assertion-error",
@@ -111,27 +108,33 @@ E.g. `stub_config.json`
 }
 ```
 
-1) Run `mockallan.py`
-	- `python mockallan.py -p 8080`
-
-1) Use the Stub Configuration API to POST the configuration to the running `mockallan` instance.
+1) Run `mockallan.py` and pass the JSON file using the -c option argument.
 
 ```bash
-curl -X POST /config --data @config.json
+python mockallan.py -p 8080 -c stub_config.json
 ```
 
-4) Execute the software under test.
+2) Execute the software under test.
 
-5) Use Mock Assertion API to make assertions on expected outcomes.
+3) Use the Assertion API to make assertions on expected outcomes.
 
-   - `curl -X GET /assert-called-once?method=POST&path=/path`
+```bash
+curl -X GET http://localhost:8080/assert-called-once?method=POST&path=/path
+```
+
+
+4) Alternativelly, use the Stub Configuration API to POST a new stub configuration to the running `mockallan` instance.
+
+```bash
+curl -X POST http://localhost:8080/config --data @stub_config.json
+```
 
 
 ## Running `mockallan`
 
 
 ```bash
-usage: mockallan.py [-h] [-H HOST] [-p PORT] [-c CONFIG]
+usage: mockallan.py [-h] [-H HOST] [-p PORT] [-c STUB_CONFIG]
 
 Mock HTTP server
 
@@ -139,23 +142,16 @@ options:
   -h, --help            show this help message and exit
   -H HOST, --host HOST
   -p PORT, --port PORT
-  -c CONFIG, --config CONFIG
-```
-
-E.g.
-
-```bash
-$ mockallan.py -p 8080
+  -c STUB_CONFIG, --stub-config STUB_CONFIG
 
 ```
 
 ## Stub Configuration JSON
 
-Stub Configuration JSON format is used to configure `mockallan` responses.
+The Stub Configuration JSON format configures mockallan responses.
 
-### Example #1 - Permanent Response
+### Stub Configuration Example
 
-`response` value is a JSON object.
 
 ```json
 {
@@ -163,7 +159,7 @@ Stub Configuration JSON format is used to configure `mockallan` responses.
 		{
 			"request": {
 				"method": "GET"
-				"path": "/path-1"
+				"path": "/mockallan-reserve"
 			},
 			"response": {
 				"code": 200
@@ -177,38 +173,6 @@ Stub Configuration JSON format is used to configure `mockallan` responses.
 }
 ```
 
-### Configuration JSON Example #2 - Sequential Response
-
-`response` value is a JSON array containing the sequence of responses to return.
-
-```json
-{
-	"endpoints": [
-		{
-			"request": {
-				"method": "POST" | "GET"
-				"path": "/path-2"
-			},
-			"response": [
-				{
-					"code": 200,
-					"headers": {
-						"Content-type": "application/json"
-					},
-					"body": "{\"message\": \"Sequential response #1 to GET /path-2\"}"
-				},
-				{
-					"code": 200,
-					"headers": {
-						"Content-type": "application/json"
-					},
-					"body": "{\"message\": \"Sequential response #2 to GET /path-2\"}"
-				}
-			]
-		}
-	]
-}
-```
 
 ## Stub Configuration API
 
@@ -219,7 +183,7 @@ Stub Configuration JSON format is used to configure `mockallan` responses.
 |GET|/configure|-|Get config|
 
 
-## Mock Assertion API
+## Assertion API
 
 
 Assertions
@@ -251,45 +215,10 @@ Python developers already familiar with this package will quickly become familia
 |GET /call-count|call_count|
 |GET /method-calls|method_calls()|
 
-
-### `mockallan` Python Package Usage
-
-`mockallan` can be integrated also as a package into your python project or test environment.
-
-Similar to the standard python class `http_server.HTTPServer`.
-
-E.g.
-
-```python
-from mockallan import MockHTTPServer
-
-# Stub configuration python dict
-# Equivalent to configuration JSON file
-stub_config_json = {
-	"endpoints": [
-		{
-			"request": {
-				"method": "GET"
-				"path": "/path-1"
-			},
-			"response": {
-				"code": 200,
-				"content-type": "application/json"
-				"response": '{"message": "Hello, you"}'
-			}
-		}
-	]
-}
-
-mock_http_server = MockHTTPServer(server_address, config_json)
-mock_http_server.serve_forever()
-```
-
 ## Source code
 
 Clone the Github repository with the command:
 
 ```bash
 git clone https://github.com/vurutal/mock-http-server.git
-
 ```
