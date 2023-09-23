@@ -3,6 +3,7 @@ from app_handler import HTTPRequest, History
 
 
 def test_assert_called_once_with_json_success(history: History):
+	"""Tests assert_called_once_with() succeeds; JSON body matches. """
 
 	endpoint_called = ('PUT', '/path/4')
 	with_request = HTTPRequest(
@@ -19,6 +20,7 @@ def test_assert_called_once_with_json_success(history: History):
 
 
 def test_assert_called_once_with_json_assertion_error(history: History):
+	"""Tests assert_called_once_with() fails; JSON body does not match. """
 
 	endpoint_called = ('PUT', '/path/4')
 	with_request = HTTPRequest(
@@ -37,6 +39,7 @@ def test_assert_called_once_with_json_assertion_error(history: History):
 
 
 def test_assert_called_once_with_json_schema_success(history: History):
+	"""Tests assert_called_once_with() succeeds; JSON schema matches. """
 
 	endpoint_called = ('PUT', '/path/4')
 	with_request = HTTPRequest(
@@ -59,6 +62,7 @@ def test_assert_called_once_with_json_schema_success(history: History):
 
 
 def test_assert_called_once_with_json_schema_assertion_error(history: History):
+	"""Tests assert_called_once_with() fails; JSON schema does not match. """
 
 	endpoint_called = ('PUT', '/path/4')
 	with_request = HTTPRequest(

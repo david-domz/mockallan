@@ -10,18 +10,16 @@ class StubConfig():
 		_endpoints
 
 	"""
-
 	_FACTORY_DEFAULT_RESPONSE = HTTPResponse(
 		code=200,
 		headers={
 			"Content-Type": "application/json"
 		},
-		body=json.dumps(
-			{
-				"status": "200",
-				"message": "This is mockallan factory default response. Please use the Stub Configuration API to configure responses per endpoint."
-			}
-		)
+		body={
+			"status": "200",
+			"message": "This is mockallan factory default response.",
+			"detail": "Use the Stub Configuration API to configure default and per-endpoint responses."
+		}
 	)
 
 	def __init__(self, config_json=None):
@@ -108,7 +106,6 @@ class StubConfig():
 					"body": response.body
 				}
 
-
 			endpoint_json = {
 				"request": {
 					"method": method,
@@ -128,7 +125,7 @@ class StubConfig():
 
 	def lookup(self, request: HTTPRequest) -> HTTPResponse | None:
 
-		endpoint = (request.method.upper(), request.path)
+		endpoint = HTTPRequest.endpoint(request)
 		response =  self._endpoints.get(endpoint)
 		if response is None:
 			response = self._default_response

@@ -6,7 +6,7 @@
 
 - Command line interface for CI environments, making it ideal for automated testing workflows.
 
-- Assertion capabilities for validating expected responses during testing.
+- Assertion capabilities for validating expected responses during testing. JSON and XML schema validation support.
 
 - Stub capabilities with configurable responses.
 

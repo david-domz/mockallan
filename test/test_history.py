@@ -15,6 +15,7 @@ def test_call_count(history: History):
 
 
 def test_assert_called_once_with_text_plain_success(history: History):
+	"""Tests assert_called_once_with() succeeds, text body matches. """
 
 	endpoint_called = ('POST', '/path/6')
 	with_request = HTTPRequest(
@@ -23,22 +24,23 @@ def test_assert_called_once_with_text_plain_success(history: History):
 		headers={
 			'Content-Type': 'text/plain'
 		},
-		body='aaaabb'
+		body='The sherried sweetness and some spice carry over from the nose.'
 	)
 
 	history.assert_called_once_with(endpoint_called, with_request)
 
 
 def test_assert_called_once_with_text_plain_assertion_error_not_called(history: History):
+	"""Tests assert_called_once_with() fails, path does not match. """
 
 	endpoint_called = ('POST', '/path/unknown')
 	with_request = HTTPRequest(
 		'POST',
-		'/path/6',
+		'/path/unknown',
 		headers={
 			'Content-Type': 'text/plain'
 		},
-		body='aaaacc'
+		body='The sherried sweetness and some spice carry over from the nose.'
 	)
 
 	with pytest.raises(AssertionError):
@@ -46,6 +48,7 @@ def test_assert_called_once_with_text_plain_assertion_error_not_called(history: 
 
 
 def test_assert_called_once_with_text_plain_assertion_error(history: History):
+	"""Tests assert_called_once_with() fails, text body does not match. """
 
 	endpoint_called = ('POST', '/path/6')
 	with_request = HTTPRequest(
@@ -54,7 +57,7 @@ def test_assert_called_once_with_text_plain_assertion_error(history: History):
 		headers={
 			'Content-Type': 'text/plain'
 		},
-		body='aaaacc'
+		body='Potatoe'
 	)
 
 	with pytest.raises(AssertionError):
@@ -62,6 +65,7 @@ def test_assert_called_once_with_text_plain_assertion_error(history: History):
 
 
 def test_assert_called_once_with_octet_stream_success(history: History):
+	"""Tests assert_called_once_with() succeeds with binary content. """
 
 	endpoint_called = ('PUT', '/path/eicar')
 	with_request = HTTPRequest(
@@ -77,6 +81,7 @@ def test_assert_called_once_with_octet_stream_success(history: History):
 
 
 def test_assert_called_once_with_octet_stream_assertion_error(history: History):
+	"""Tests assert_called_once_with() fails; binary content does not match. """
 
 	endpoint_called = ('PUT', '/path/eicar')
 	with_request = HTTPRequest(
@@ -85,7 +90,7 @@ def test_assert_called_once_with_octet_stream_assertion_error(history: History):
 		headers={
 			'Content-Type': 'application/octet-stream'
 		},
-		body=b'\x00\x01\x02'
+		body=b'\x00\x01\x02\x03'
 	)
 
 	with pytest.raises(AssertionError):

@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from lxml import etree
 import jsonschema
 from request import HTTPRequest, HTTPResponse
 
@@ -132,11 +133,17 @@ class History:
 		with_content_type = validation_request.headers.get('Content-Type')
 
 		if with_content_type == 'application/schema+json' and content_type == 'application/json':
+
 			try:
 				jsonschema.validate(record_request.body, validation_request.body)
 				matches = True
 			except jsonschema.ValidationError:
 				...
+		elif with_content_type == 'application/xml' and content_type == 'application/xml':
+
+			xml_doc = etree.fromstring(record_request.body)
+			schema = etree.XMLSchema(etree.fromstring(validation_request.body))
+			matches = schema.validate(xml_doc)
 		else:
 			# text/plain
 			# application/octet-stream

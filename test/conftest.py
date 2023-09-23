@@ -24,6 +24,7 @@ def empty_history():
 
 @fixture
 def history():
+	"""History instance with many requests. """
 
 	history_instance = History()
 	history_instance.append_many(
@@ -33,11 +34,7 @@ def history():
 				HTTPResponse(200)
 			),
 			(
-				HTTPRequest(
-					'POST',
-					'/path/2',
-					body=b''
-				),
+				HTTPRequest('POST', '/path/2'),
 				HTTPResponse(200)
 			),
 			(
@@ -72,7 +69,7 @@ def history():
 					headers={
 						'Content-Type': 'application/octet-stream'
 					},
-					body=b'ffeeffeeff'
+					body=b'ffeeffeeffee'
 				),
 				HTTPResponse(200)
 			),
@@ -83,7 +80,7 @@ def history():
 					headers={
 						'Content-Type': 'text/plain'
 					},
-					body='aaaabb'
+					body='The sherried sweetness and some spice carry over from the nose.'
 				),
 				HTTPResponse(200)
 			),
@@ -98,7 +95,6 @@ def history():
 				),
 				HTTPResponse(200)
 			),
-			# See https://lxml.de/validation.html
 			(
 				HTTPRequest(
 					'PUT',
@@ -106,7 +102,14 @@ def history():
 					headers={
 						'Content-Type': 'application/xml'
 					},
-					body='<xml></xml>'
+					body='''
+<individual>
+	<name>Liam Campbell</name>
+	<address>
+		<zip>AB38 9RX</zip>
+		<city>Craigellachie</city>
+	</address>
+</individual>'''
 				),
 				HTTPResponse(200)
 			)

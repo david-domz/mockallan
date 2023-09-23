@@ -48,7 +48,6 @@ def http_request_handler_class_factory(app_handler: AppHandler):
 			parse_result = urllib.parse.urlparse(self.path)
 			query = urllib.parse.parse_qs(parse_result.query)
 
-			#content_length = int(self.headers['Content-Length'])
 			body = self.rfile.read(0)
 			body_str = body.decode('utf-8')
 			request = HTTPRequest('POST', parse_result.path, query, self.headers, body_str)
@@ -72,9 +71,7 @@ def http_request_handler_class_factory(app_handler: AppHandler):
 class MockHTTPServer():
 	"""Configurable HTTP server mock.
 
-	Configurable at initialization time from a JSON file or python dict.
-
-	Configurable at run time via REST API.
+	Configurable at initialization time from a JSON file or python dict. Configurable at run time via REST API.
 
 	"""
 	def __init__(self, server_address, stub_config_json: dict | str | None):
@@ -83,7 +80,6 @@ class MockHTTPServer():
 		app_handler = AppHandler(self._config)
 		http_request_handler_class = http_request_handler_class_factory(app_handler)
 		self._http_server = HTTPServer(server_address, http_request_handler_class)
-
 
 	def serve_forever(self, poll_interval=0.5):
 

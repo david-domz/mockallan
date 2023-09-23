@@ -1,17 +1,4 @@
 from dataclasses import dataclass, field
-from typing import Union
-
-
-Body = Union[str, bytes, dict]
-"""
-
-	Class type	Content-Type
-	---		---
-	str		text/plain
-	bytes		application/octet-stream
-	dict		application/json
-
-"""
 
 
 @dataclass
@@ -20,8 +7,7 @@ class HTTPRequest:
 	path: str
 	query: dict = field(default_factory=dict)
 	headers: dict = field(default_factory=dict)
-
-	body: Body = ''
+	body: dict | str | bytes = ''
 
 	@staticmethod
 	def endpoint(request: 'HTTPRequest') -> tuple[str, str]:
@@ -32,4 +18,4 @@ class HTTPRequest:
 class HTTPResponse:
 	code: int
 	headers: dict = field(default_factory=dict)
-	body: Body = ''
+	body: dict | str | bytes = ''
