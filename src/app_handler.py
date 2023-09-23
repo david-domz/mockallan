@@ -6,7 +6,10 @@ from history import History, RequestRecord
 
 class AppHandler():
 
-	def __init__(self, config: StubConfig):
+	def __init__(self, config: StubConfig, history: History | None = None):
+
+		if history is None:
+			history = History()
 
 		self._config = config
 		self._api_endpoints = {
@@ -23,7 +26,7 @@ class AppHandler():
 			('GET', '/method-calls'): ...
 		}
 
-		self._history = History()
+		self._history = history
 
 
 	@property
@@ -112,7 +115,7 @@ class AppHandler():
 			call_count = self._history.call_count(method_called, path_called)
 
 			if call_count > 0:
-				response = HTTPResponse(204)
+				response = self._create_assertion_success_response(request, endpoint_called, call_count)
 			else:
 				response = self._create_assertion_error_response(request, endpoint_called, 1, call_count)
 
@@ -128,14 +131,8 @@ class AppHandler():
 		call_count = self._history.call_count(method_called, path_called)
 
 		if call_count == 1:
-			response = HTTPResponse(204)
+			response = self._create_assertion_success_response(request, endpoint_called, call_count)
 		else:
-			# response = HTTPResponse(
-			# 	409,
-			# 	headers={'Content-Type': 'application/json+error'},
-			# 	body='{\"message\": \"/assert-called-once assertion failed.\"}'
-			# 	# TO DO: endpoint method, path was called (x) times
-			# )
 			response = self._create_assertion_error_response(request, endpoint_called, 1, call_count)
 
 		return response
@@ -143,27 +140,17 @@ class AppHandler():
 
 	def _assert_called_with(self, request: HTTPRequest) -> HTTPResponse:	# pylint: disable=unused-argument
 
-		# TO DO: 400 Bad request if KeyError
 		try:
 			method_called = request.query['method'][0]
 			path_called = request.query['path'][0]
 			endpoint_called = (method_called, path_called)
 		except KeyError as e:
-			# TODO
-			# JSON response body with status, type, title, detail
-			# dumps()
-			response = HTTPResponse(
-				400,
-				headers={'Content-Type': 'application/json+error'},
-				body=f'{{"message": "Bad request. Query parameter {e} not found."}}'
-			)
+			response = self._create_query_param_not_found_error_response(e)
 		else:
 			call_count = self._history.call_count(method_called, path_called)
 
-
-
 			if call_count > 0:
-				response = HTTPResponse(204)
+				response = self._create_assertion_success_response(request, endpoint_called, call_count)
 			else:
 				response = self._create_assertion_error_response(request, endpoint_called, 1, call_count)
 
@@ -177,21 +164,14 @@ class AppHandler():
 			path_called = request.query['path'][0]
 			endpoint_called = (method_called, path_called)
 		except KeyError as e:
-			# TODO
-			# JSON response body with status, type, title, detail
-			# dumps()
-			response = HTTPResponse(
-				400,
-				headers={'Content-Type': 'application/json+error'},
-				body=f'{{"message": "Bad request. Query parameter {e} not found."}}'
-			)
+			response = self._create_query_param_not_found_error_response(e)
 		else:
 			try:
 				self._history.assert_called_once_with(endpoint_called, request)
 			except AssertionError as e:
 				response = self._create_assertion_error_response(request, endpoint_called, 1, 0)
 			else:
-				response = HTTPResponse(204)
+				response = self._create_assertion_success_response(request, endpoint_called, 1)
 
 		return response
 
@@ -213,6 +193,23 @@ class AppHandler():
 
 
 	@staticmethod
+	def _create_assertion_success_response(
+			assert_request: HTTPRequest,
+			endpoint_called: tuple[str, str],
+			call_count: int) -> HTTPResponse:
+
+		status = 200
+		headers = {'Content-Type': 'application/json'}
+		body = {
+			"status": status,
+			"type": "assertion-success",
+			"title": f"Assertion request {assert_request.method} {assert_request.path} succeeded",
+			"detail": f"{endpoint_called[0]} {endpoint_called[1]} was called {call_count} times."
+		}
+
+		return HTTPResponse(status, headers, body)
+
+	@staticmethod
 	def _create_assertion_error_response(
 			assert_request: HTTPRequest,
 			endpoint_called: tuple[str, str],
@@ -228,4 +225,17 @@ class AppHandler():
 			"detail": f"{endpoint_called[0]} {endpoint_called[1]} expected call count was {expected_call_count} but actual call count was {call_count}."
 		}
 
-		return HTTPResponse(status, headers, json.dumps(body))
+		return HTTPResponse(status, headers, body)
+
+
+	@staticmethod
+	def _create_query_param_not_found_error_response(e: Exception) -> HTTPResponse:
+
+		return HTTPResponse(
+			400,
+			headers={'Content-Type': 'application/json+error'},
+			body={
+				"status": 400,
+				"message": f"Bad request. Query parameter {e} not found."
+			}
+		)
