@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+import json
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import urllib.parse
 from request import HTTPRequest, HTTPResponse
@@ -62,6 +63,9 @@ def http_request_handler_class_factory(app_handler: AppHandler):
 			for key, value in response.headers.items():
 				self.send_header(key, value)
 			self.end_headers()
+
+			if isinstance(response.body, dict):
+				response.body = json.dumps(response.body)
 
 			self.wfile.write(response.body.encode('utf-8'))
 
