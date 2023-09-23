@@ -51,7 +51,7 @@ Alternatively, enter the following command to simulate a request to the software
 
 
 ```bash
-$ curl -X POST http://localhost:8080/mockallan-reserve --data '{'foo': 'bar'}'
+$ curl -s -X POST http://localhost:8080/mockallan-reserve --data '{'foo': 'bar'}'
 ```
 
 `mockallan` will reply with the default response.
@@ -59,18 +59,27 @@ $ curl -X POST http://localhost:8080/mockallan-reserve --data '{'foo': 'bar'}'
 ```json
 {
 	"status": "200",
-	"message": "This is mockallan default response. Use the Stub Configuration API to configure responses per endpoint."
+	"message": "This is mockallan factory default response.",
+	"detail": "Use the Stub Configuration API to configure default and per-endpoint responses."
 }
 ```
 
 1) Use `mockallan` Assertion API to make assertions on the expected response.
 
-If the assertion request returns 200 then everything went fine.
-
 
 ```bash
-$ curl "http://localhost:8080/assert-called-once?method=POST&path=/mockallan-reserve" ; echo
+$ curl "http://localhost:8080/assert-called-once?method=POST&path=/mockallan-reserve"
 
+```
+If the assertion request returns 200 then everything went fine.
+
+```json
+{
+	"status": 200,
+	"type": "assertion-success",
+	"title": "Assertion request GET /assert-called-once succeeded",
+	"detail": "POST /mockallan-reserve was called 1 times."
+}
 ```
 
 Otherwise, if it returns 409 then the assertion failed and the software under test did not behave as expected.
@@ -103,7 +112,10 @@ E.g. `stub_config.json`
 				"headers": {
 					"Content-type": "application/json"
 				},
-				"body": "{\"message\": \"This is the configured response for POST /configured-path/mockallan-reserve\"}"
+				"body": {
+					"status": "200",
+					"message": "This is the configured response for POST /configured-path/mockallan-reserve"
+				}
 			}
 		}
 	]
@@ -113,7 +125,7 @@ E.g. `stub_config.json`
 1) Run `mockallan.py` and pass the JSON file using the -c option argument.
 
 ```bash
-python mockallan.py -p 8080 -c stub_config.json
+$ python mockallan.py --c stub_config.json
 ```
 
 2) Execute the software under test.
@@ -121,14 +133,13 @@ python mockallan.py -p 8080 -c stub_config.json
 3) Use the Assertion API to make assertions on expected outcomes.
 
 ```bash
-curl -X GET http://localhost:8080/assert-called-once?method=POST&path=/configured-path/mockallan-reserve
+$ curl -X GET http://localhost:8080/assert-called-once?method=POST&path=/configured-path/mockallan-reserve
 ```
-
 
 4) Alternativelly, use the Stub Configuration API to POST a new stub configuration to the running `mockallan` instance.
 
 ```bash
-curl -X POST http://localhost:8080/config --data @stub_config.json
+$ curl -X POST http://localhost:8080/config --data @stub_config.json
 ```
 
 
