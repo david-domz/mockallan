@@ -12,6 +12,11 @@ setup(
 	long_description_content_type="text/markdown",
 	long_description='A configurable HTTP server mock that can be use in integration tests.',
 	install_requires=[],
+	entry_points={
+		"console_scripts": [
+			"mockallan = mockallan:main"
+		],
+	},
 	keywords=['python', 'http', 'REST', 'mock', 'test', 'pytest'],
 	classifiers=[
 		"Development Status :: 4 - Beta",
