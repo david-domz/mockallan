@@ -1,7 +1,5 @@
 # `mockallan`- HTTP Server Mock
 
-<p align="center"><img src="mockallan.png""/></p>
-
 `mockallan` is a HTTP server mock designed for use as a substitute for a production HTTP server within a testing environment.
 
 ## Features
@@ -185,9 +183,6 @@ The Stub Configuration JSON format configures mockallan responses.
 
 ## Assertion API
 
-
-Assertions
-
 |Method|Path|Request Body|Status|Response Body|
 |-|-|-|-|-|
 |GET|/assert-called|-|200 OK; 409 Conflict|Assertion success or error message|
@@ -195,7 +190,7 @@ Assertions
 |POST|/assert-called-with|Matching JSON schema or message body|200 OK; 409 Conflict|Assertion success or error message|
 |POST|/assert-called-once-with|Matching JSON schema or message body|200 OK; 409 Conflict|Assertion success or error message|
 |GET|/call-args|-|200 OK|The request body that the mock was last called with|
-|GET|/call-args-list|-|200 OK|-|List of all the requests made to the mock in sequence.|
+|GET|/call-args-list|-|200 OK|List of all the requests made to the mock in sequence.|
 |GET|/call-count|-|200 OK|Request count|
 
 
