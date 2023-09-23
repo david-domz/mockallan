@@ -29,6 +29,8 @@ TO DO: jsonschema: requirement or dependency? -->
 
 ## Installation
 
+`mockallan` is available on PyPI. You can install using pip:
+
 ```bash
 $ pip install mockallan
 ```
@@ -155,6 +157,18 @@ The Stub Configuration JSON format configures mockallan responses.
 
 ```json
 {
+	"defaults": {
+		"response": {
+			"code": 200,
+			"headers": {
+				"Content-Type": "application/json"
+			},
+			"body": {
+				"status": 200,
+				"message": "This is the default response configured in stub_config.json"
+			}
+		}
+	},
 	"endpoints": [
 		{
 			"request": {
@@ -166,7 +180,10 @@ The Stub Configuration JSON format configures mockallan responses.
 				"headers": {
 					"Content-type": "application/json"
 				},
-				"body": "{\"message\": \"This is the configured response for GET /configured-path/mockallan-reserve\"}"
+				"body": {
+					"status": 200,
+					"message: "This is the configured response for GET /configured-path/mockallan-reserve"
+				}
 			}
 		}
 	]
