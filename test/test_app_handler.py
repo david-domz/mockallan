@@ -1,12 +1,12 @@
 from pytest import fixture
 from http import HTTPStatus
-from app_handler import AppHandler, StubConfig, HTTPRequest, HTTPResponse
+from app_handler import AppHandler, StubConfig, HTTPRequest
 
 
 @fixture
-def app_handler(config: StubConfig):
+def app_handler(stub_config: StubConfig):
 
-	yield AppHandler(config)
+	yield AppHandler(stub_config)
 
 
 def test_handle_request_get_config_status_200(app_handler: AppHandler):
@@ -17,14 +17,20 @@ def test_handle_request_get_config_status_200(app_handler: AppHandler):
 	assert response.code == 200
 
 
-def test_handle_request_get_unknown_path_default_response(config: StubConfig, app_handler: AppHandler):
+def test_handle_request_get_unknown_path_default_response(stub_config: StubConfig, app_handler: AppHandler):
+	"""
 
-	# Act
+	When:
+		- handle_request() is called with GET /unknown
+	Then:
+		- handle_request() returns default response
+		- The request is added to the history
+
+	"""
 	request = HTTPRequest('GET', '/unknown')
 	response = app_handler.handle_request(request)
 
-	# Assert
-	assert response == config.default_response
+	assert response == stub_config.default_response
 
 	assert len(app_handler.request_registry.request_records) == 1
 
@@ -33,18 +39,24 @@ def test_handle_request_get_unknown_path_default_response(config: StubConfig, ap
 	assert response == request_record.response
 
 
-def test_handle_request_get_assert_called_status_200(config: StubConfig, app_handler: AppHandler):
+def test_handle_request_get_assert_called_status_200(stub_config: StubConfig, app_handler: AppHandler):
+	"""
 
+	Given:
+		- GET /mockallan-reserve has been called
+	When:
+		- handle_request() is called with GET /assert-called?method=GET&path=/mockallan-reserve
+	Then:
+		- handle_request() returns status 200, type assertion-success
+
+	"""
 	# Arrange
-	unknown_path_1 = '/unknown/path/1'
+	path_1 = '/path-1824'
 
-	request = HTTPRequest(
-		'GET',
-		unknown_path_1
-	)
+	request = HTTPRequest('GET', path_1)
 	response = app_handler.handle_request(request)
 
-	assert response == config.default_response
+	assert response == stub_config.default_response
 
 	# Act
 	assert_called_request = HTTPRequest(
@@ -52,22 +64,32 @@ def test_handle_request_get_assert_called_status_200(config: StubConfig, app_han
 		'/assert-called',
 		{
 			'method': ['GET'],
-			'path': [unknown_path_1]
+			'path': [path_1]
 		}
 	)
 	assert_called_response = app_handler.handle_request(assert_called_request)
 
 	# Assert
-	assert assert_called_response.code == 204
+	assert assert_called_response.code == 200
+	assert assert_called_response.body['type'] == 'assertion-success'
 
 
-def test_handle_request_get_assert_called_status_409(config: StubConfig, app_handler: AppHandler):
+def test_handle_request_get_assert_called_status_409(stub_config: StubConfig, app_handler: AppHandler):
+	"""
 
+	Given:
+		- /mockallan-reserve has not been called
+	When:
+		- handle_request() is called with GET /assert-called?method=GET&path=/mockallan-reserve
+	Then:
+		- handle_request() returns status 409, type assertion-error
+
+	"""
 	# Arrange
-	request = HTTPRequest('GET', '/unknown/path/1')
+	request = HTTPRequest('GET', '/reserve-')
 	response = app_handler.handle_request(request)
 
-	assert response == config.default_response
+	assert response == stub_config.default_response
 
 	# Act
 	assert_called_request = HTTPRequest(
@@ -75,40 +97,41 @@ def test_handle_request_get_assert_called_status_409(config: StubConfig, app_han
 		'/assert-called',
 		{
 			'method': ['GET'],
-			'path': ['/unknown/path/2']
+			'path': ['/mockallan-reserve']
 		}
 	)
 	assert_called_response = app_handler.handle_request(assert_called_request)
 
 	# Assert
 	assert assert_called_response.code == 409
+	assert assert_called_response.body['type'] == 'assertion-error'
 
 
-def test_handle_request_get_assert_called_status_400(config: StubConfig, app_handler: AppHandler):
+def test_handle_request_get_assert_called_status_400(stub_config: StubConfig, app_handler: AppHandler):
 	"""
 
 	Given:
-		- AppHandler handles GET /unknown/path/1
 	When:
-		- AppHandler handles GET /assert-called
-		- Query does not include method and path
+		- handle_request() called with GET /assert-called
+		- URL query does not include method and path
 	Then:
-		- AppHandler returns 400 Bad Request
+		- handle_request() returns 400 Bad Request
 
 	"""
 	# Arrange
-	request = HTTPRequest('GET', '/unknown/path/1')
+	path_1 = '/unknown'
+	request = HTTPRequest('GET', path_1)
 	response = app_handler.handle_request(request)
 
-	assert response == config.default_response
+	assert response == stub_config.default_response
 
 	# Act
 	assert_called_request = HTTPRequest(
 		'GET',
 		'/assert-called',
 		{
-			'methodology': ['GET'],
-			'pathetic': ['/unknown/path/2']
+			'methodology': ['GET'],	# Invalid query parameter
+			'pathetic': [path_1]	# Invalid query parameter
 		}
 	)
 	assert_called_response = app_handler.handle_request(assert_called_request)
@@ -117,7 +140,7 @@ def test_handle_request_get_assert_called_status_400(config: StubConfig, app_han
 	assert assert_called_response.code == 400
 
 
-def test_handle_request_get_assert_called_once_status_200(config: StubConfig, app_handler: AppHandler):
+def test_handle_request_get_assert_called_once_status_200(stub_config: StubConfig, app_handler: AppHandler):
 
 	unknown_path_1 = '/unknown/path/1'
 
@@ -129,7 +152,7 @@ def test_handle_request_get_assert_called_once_status_200(config: StubConfig, ap
 	response = app_handler.handle_request(request)
 
 	# Assert
-	assert response == config.default_response
+	assert response == stub_config.default_response
 
 	assert_called_request = HTTPRequest(
 		'GET',
@@ -141,10 +164,10 @@ def test_handle_request_get_assert_called_once_status_200(config: StubConfig, ap
 	)
 	assert_called_response = app_handler.handle_request(assert_called_request)
 
-	assert assert_called_response.code == 204
+	assert assert_called_response.code == 200
 
 
-def test_handle_request_get_assert_called_once_status_409(config: StubConfig, app_handler: AppHandler):
+def test_handle_request_get_assert_called_once_status_409(stub_config: StubConfig, app_handler: AppHandler):
 	"""
 
 	Given:
