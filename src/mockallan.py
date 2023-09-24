@@ -94,7 +94,7 @@ class MockHTTPServer():
 
 
 def main():
-	argparse = ArgumentParser(description='Mock HTTP server')
+	argparse = ArgumentParser(description='Mockallan HTTP server mock ver. 0.0.1')
 	argparse.add_argument("-H", "--host", type=str, metavar="HOST", dest="host", default="0.0.0.0")
 	argparse.add_argument("-p", "--port", type=int, metavar="PORT", dest="port", default=8080)
 	argparse.add_argument("-c", "--stub-config", type=str, metavar="STUB_CONFIG", dest="stub_config_json")
