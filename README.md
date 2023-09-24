@@ -60,7 +60,7 @@ $ curl -s -X POST http://localhost:8080/mockallan-reserve --data '{'foo': 'bar'}
 }
 ```
 
-1) Use `mockallan` Assertion API to make assertions on the expected response.
+3) Use `mockallan` Assertion API to make assertions on the expected response.
 
 
 ```bash
@@ -118,21 +118,21 @@ E.g. `stub_config.json`
 }
 ```
 
-1) Run `mockallan.py` and pass the JSON file using the -c option argument.
+2) Run `mockallan.py` and pass the JSON file using the -c option argument.
 
 ```bash
 $ python mockallan.py --c stub_config.json
 ```
 
-2) Execute the software under test.
+3) Execute the software under test.
 
-3) Use the Assertion API to make assertions on expected outcomes.
+4) Use the Assertion API to make assertions on expected outcomes.
 
 ```bash
 $ curl -X GET http://localhost:8080/assert-called-once?method=POST&path=/configured-path/mockallan-reserve
 ```
 
-4) Alternativelly, use the Stub Configuration API to POST a new stub configuration to the running `mockallan` instance.
+5) Alternativelly, use the Stub Configuration API to POST a new stub configuration to the running `mockallan` instance.
 
 ```bash
 $ curl -X POST http://localhost:8080/config --data @stub_config.json
@@ -145,7 +145,7 @@ $ curl -X POST http://localhost:8080/config --data @stub_config.json
 ```bash
 usage: mockallan.py [-h] [-H HOST] [-p PORT] [-c STUB_CONFIG]
 
-Mock HTTP server
+Mockallan HTTP server mock ver. 0.0.1
 
 options:
   -h, --help            show this help message and exit
@@ -224,20 +224,10 @@ Both Stub Configuration API and Assertion API naming are inspired by class `Mock
 
 Python developers already familiar with this package can quickly become familiar with `mockallan` API.
 
-|`mockallan` Assertion API endpoint|Python class `Mock` method|
-|-|-|
-|GET /assert-called|assert_called()|
-|GET /assert-called-once|assert_called_once()|
-|POST /assert-called-with|assert_called_with()|
-|POST /assert-called-once-with|assert_called_once_with()|
-|GET /call-args|call_args()|
-|GET /called|called|
-|GET /call-count|call_count|
-|GET /method-calls|method_calls()|
 
 ## Source code
 
-Clone the Github repository with the command:
+Clone the repository with the following command.
 
 ```bash
 git clone https://github.com/david-domz/mockallan.git
