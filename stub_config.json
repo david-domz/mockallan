@@ -1,0 +1,64 @@
+{
+	"defaults": {
+		"response": {
+			"code": 200,
+			"headers": {
+				"Content-Type": "application/json"
+			},
+			"body": {
+				"status": 200,
+				"message": "This is the default response configured in stub_config.json"
+			}
+		}
+	},
+	"endpoints": [
+		{
+			"request": {
+				"method": "GET",
+				"path": "/mockallan-reserve"
+			},
+			"response": {
+				"code": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"body": "{\"message\": \"This is the resource at /mockallan-reserve\"}"
+			}
+		},
+		{
+			"request": {
+				"method": "GET",
+				"path": "/path-2"
+			},
+			"response": [
+				{
+					"code": 200,
+					"headers": {
+						"Content-type": "application/json"
+					},
+					"body": "{\"message\": \"This is the first response for GET /path-2\"}"
+				},
+				{
+					"code": 200,
+					"headers": {
+						"Content-type": "application/json"
+					},
+					"body": "{\"message\": \"This is the second response for GET /path-2\"}"
+				}
+			]
+		},
+		{
+			"request": {
+				"method": "POST",
+				"path": "/path/soap/1"
+			},
+			"response": {
+				"code": 200,
+				"headers": {
+					"Content-Type": "application/xml"
+				},
+				"body": "<SOAP:Envelope xmlns:SOAP=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><SOAP:Body><m:CreateUser><Integer xsi:type=\"xsd:integer\">0</Integer></m:CreateUser></SOAP:Body></SOAP:Envelope>"
+			}
+		}
+	]
+}
