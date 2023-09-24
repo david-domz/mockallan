@@ -8,7 +8,7 @@ setup(
 	version='0.0.1',
 	author="David Domínguez",
 	author_email="david.7b8@gmail.com",
-	description='Versatile HTTP server mock designed for use as a substitute for a production HTTP server within a testing environment.',
+	description='HTTP server mock designed for use as a substitute for a production HTTP server within a testing environment.',
 	py_modules=['mockallan', 'app_handler', 'history', 'request', 'stub_config'],
 	package_dir={'': 'src'},
 	long_description_content_type="text/markdown",
