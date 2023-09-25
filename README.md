@@ -1,23 +1,20 @@
-# `mockallan`- HTTP Server Mock
+# `mockallan` - Lightweight HTTP Server Mock
 
-`mockallan` is a HTTP server mock designed for use as a substitute for a production HTTP server within a testing environment.
+`mockallan` is a lightweight HTTP server mock used as a replacement for a production HTTP server in testing environments.
 
 ## Features
 
-- Command line interface for CI environments, making it ideal for automated testing workflows.
+- Command line interface for continuous integration (CI) and testing environments.
 
-- Assertion capabilities for validating expected responses during testing. JSON and XML schema validation support.
+- Assertion capabilities for validating expected requests. JSON and XML schema validation support.
 
 - Stub capabilities with configurable responses.
 
-- JSON-based initialization time and runtime configuration.
-   
-- Request history empowering robust assertion capabilities and diagnostics.
+- Request history enables robust assertion capabilities and diagnostics.
 
-- API adheres to naming conventions in line with the `Mock` class from the Python `unittest.mock` standard library.
+- API naming adheres to the `Mock` class from the Python `unittest.mock` standard library.
 
-- Concise codebase of under 1000 lines, emphasizing minimalism and efficient resource utilization.
-
+- Concise codebase of under 1000 lines, focusing on simplicity and making the best use of resources.
 
 ## Requirements
 
@@ -41,16 +38,18 @@ $ python mockallan.py
 Listening on 0.0.0.0:8080
 ```
 
-2) Run the software under test.
+2) Configure the hostname and port for Mockallan in your software under test and run it.
 
-Alternatively, enter the following command to simulate a request to the software under test. For example, if you expect the software under test to perform a `POST /mockallan-reserve`.
+If you currently don't have any software whose requests you want to test, enter the following command to simulate a request performed by some software under test."
+
+For example, if you expect the software under test to perform a `POST /orders/order_e2b9/products`.
 
 
 ```bash
-$ curl -s -X POST http://localhost:8080/mockallan-reserve --data '{'foo': 'bar'}'
+$ curl -s -X POST http://localhost:8080/orders/order_e2b9/products --data '{'product_id': 'foo', 'description': 'bar', 'quantity': 1}'
 ```
 
-`mockallan` will reply with the default response.
+`mockallan` will reply with the factory default response.
 
 ```json
 {
@@ -60,13 +59,13 @@ $ curl -s -X POST http://localhost:8080/mockallan-reserve --data '{'foo': 'bar'}
 }
 ```
 
-3) Use `mockallan` Assertion API to make assertions on the expected response.
+1) Use `mockallan` Assertion API to make assertions on the expected response.
 
 
 ```bash
-$ curl "http://localhost:8080/assert-called-once?method=POST&path=/mockallan-reserve"
-
+$ curl "http://localhost:8080/assert-called-once?method=POST&path=/orders/order_e2b9/products"
 ```
+
 If the assertion request returns 200 then everything went fine.
 
 ```json
@@ -74,7 +73,7 @@ If the assertion request returns 200 then everything went fine.
 	"status": 200,
 	"type": "assertion-success",
 	"title": "Assertion request GET /assert-called-once succeeded",
-	"detail": "POST /mockallan-reserve was called 1 times."
+	"detail": "POST /orders/order_e2b9/products was called 1 times."
 }
 ```
 
@@ -85,7 +84,7 @@ Otherwise, if it returns 409 then the assertion failed and the software under te
 	"status": 409,
 	"type": "assertion-error",
 	"title": "Assertion request GET /assert-called-once failed",
-	"detail": "POST /mockallan-reserve expected call count was 1 but actual call count was 2."
+	"detail": "POST /orders/order_e2b9/products expected call count was 1 but actual call count was 2."
 }
 ```
 
@@ -101,7 +100,7 @@ E.g. `stub_config.json`
 		{
 			"request": {
 				"method": "POST",
-				"path": "/configured-path/mockallan-reserve"
+				"path": "/orders/order_e2b9/products"
 			},
 			"response": {
 				"code": 200,
@@ -110,7 +109,7 @@ E.g. `stub_config.json`
 				},
 				"body": {
 					"status": "200",
-					"message": "This is the configured response for POST /configured-path/mockallan-reserve"
+					"message": "This is the configured response for POST /orders/order_e2b9/products"
 				}
 			}
 		}
@@ -124,19 +123,16 @@ E.g. `stub_config.json`
 $ python mockallan.py --c stub_config.json
 ```
 
-3) Execute the software under test.
+3) Execute the software under test. `mockallan` will reply with the configured response to the `POST /orders/order_e2b9/products`.
+
 
 4) Use the Assertion API to make assertions on expected outcomes.
 
 ```bash
-$ curl -X GET http://localhost:8080/assert-called-once?method=POST&path=/configured-path/mockallan-reserve
+$ curl -X GET http://localhost:8080/assert-called-once?method=POST&path=/orders/order_e2b9/products
 ```
 
-5) Alternativelly, use the Stub Configuration API to POST a new stub configuration to the running `mockallan` instance.
-
-```bash
-$ curl -X POST http://localhost:8080/config --data @stub_config.json
-```
+If the assertion request returns 200 then everything went fine. Otherwise, if it returns 409 then the assertion failed and the software under test did not behave as expected.
 
 
 ## Running `mockallan`
@@ -157,7 +153,7 @@ options:
 
 ## Stub Configuration JSON
 
-The Stub Configuration JSON format configures mockallan responses.
+The Stub Configuration JSON format configures `mockallan` responses.
 
 ### Stub Configuration Example
 
@@ -180,7 +176,7 @@ The Stub Configuration JSON format configures mockallan responses.
 		{
 			"request": {
 				"method": "GET"
-				"path": "/configured-path/mockallan-reserve"
+				"path": "/orders/order_e2b9/products"
 			},
 			"response": {
 				"code": 200
@@ -189,7 +185,7 @@ The Stub Configuration JSON format configures mockallan responses.
 				},
 				"body": {
 					"status": 200,
-					"message": "This is the configured response for GET /configured-path/mockallan-reserve"
+					"message": "This is the configured response for GET /orders/order_e2b9/products"
 				}
 			}
 		}
@@ -225,10 +221,8 @@ Both Stub Configuration API and Assertion API naming are inspired by class `Mock
 Python developers already familiar with this package can quickly become familiar with `mockallan` API.
 
 
-## Source code
+## Contact
 
-Clone the repository with the following command.
+I value your feedback! If you've used `mockallan` and have suggestions, bug reports, or any other feedback, please let me know. You can reach out to me via [email](mailto:david.7b8@gmail.com).
 
-```bash
-git clone https://github.com/david-domz/mockallan.git
-```
+Thank you!
