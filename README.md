@@ -33,6 +33,7 @@ $ pip install mockallan
 
 1) Run `mockallan.py`
 
+
 ```bash
 $ python mockallan.py
 Listening on 0.0.0.0:8080
@@ -40,9 +41,9 @@ Listening on 0.0.0.0:8080
 
 2) Configure the hostname and port for Mockallan in your software under test and run it.
 
-If you currently don't have any software whose requests you want to test, enter the following command to simulate a request performed by some software under test."
+If you currently don't have any software whose requests you want to test, enter the following command to simulate a request performed by any software under test."
 
-For example, if you expect the software under test to perform a `POST /orders/order_e2b9/products`.
+For example, if you expect the software under test to perform a `POST /orders/order_e2b9/products` run the following command.
 
 
 ```bash
@@ -59,7 +60,7 @@ $ curl -s -X POST http://localhost:8080/orders/order_e2b9/products --data '{'pro
 }
 ```
 
-1) Use `mockallan` Assertion API to make assertions on the expected response.
+3) Use `mockallan` Assertion API to make assertions on the expected response.
 
 
 ```bash
@@ -90,9 +91,7 @@ Otherwise, if it returns 409 then the assertion failed and the software under te
 
 ## Using Configurable Stub Responses
 
-1) Configure `mockallan` responses by using the Stub Configuration JSON Format.
-
-E.g. `stub_config.json`
+1) Configure `mockallan` responses by editing a Stub Configuration JSON file. E.g. `stub_config.json`.
 
 ```json
 {
@@ -117,10 +116,10 @@ E.g. `stub_config.json`
 }
 ```
 
-2) Run `mockallan.py` and pass the JSON file using the -c option argument.
+2) Run `mockallan.py` and provide the JSON file as an argument using the -c option.
 
 ```bash
-$ python mockallan.py --c stub_config.json
+$ python mockallan.py -c stub_config.json
 ```
 
 3) Execute the software under test. `mockallan` will reply with the configured response to the `POST /orders/order_e2b9/products`.
