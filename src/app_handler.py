@@ -16,7 +16,7 @@ class AppHandler():
 			# Stub Configuration API
 			('GET', '/config'): self._get_config,
 			('PUT', '/config'): self._put_config,
-			# Mock Assertion API
+			# Assertion API
 			('GET', '/assert-called'): self._assert_called,
 			('GET', '/assert-called-once'): self._assert_called_once,
 			('GET', '/assert-called-with'): self._assert_called_with,

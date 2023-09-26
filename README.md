@@ -1,4 +1,6 @@
-# `mockallan` - Lightweight HTTP Server Mock ![mockallan version](https://img.shields.io/pypi/v/mockallan.svg)
+# `mockallan` - Lightweight HTTP Server Mock
+
+![mockallan version](https://img.shields.io/pypi/v/mockallan.svg)
 
 `mockallan` is a lightweight HTTP server mock used as a replacement for a production HTTP server in testing environments.
 
@@ -134,22 +136,6 @@ $ curl -X GET http://localhost:8080/assert-called-once?method=POST&path=/orders/
 If the assertion request returns 200 then everything went fine. Otherwise, if it returns 409 then the assertion failed and the software under test did not behave as expected.
 
 
-## Running `mockallan`
-
-
-```bash
-usage: mockallan.py [-h] [-H HOST] [-p PORT] [-c STUB_CONFIG]
-
-Mockallan HTTP server mock ver. 0.0.1
-
-options:
-  -h, --help            show this help message and exit
-  -H HOST, --host HOST
-  -p PORT, --port PORT
-  -c STUB_CONFIG, --stub-config STUB_CONFIG
-
-```
-
 ## Stub Configuration JSON
 
 The Stub Configuration JSON format configures `mockallan` responses.
@@ -220,7 +206,7 @@ Both Stub Configuration API and Assertion API naming are inspired by class `Mock
 Python developers already familiar with this package can quickly become familiar with `mockallan` API.
 
 
-## Contact
+## Feedback
 
 I value your feedback! If you've used `mockallan` and have suggestions, bug reports, or any other feedback, please let me know. You can reach out to me via [email](mailto:david.7b8@gmail.com).
 
