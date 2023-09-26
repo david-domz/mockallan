@@ -1,6 +1,6 @@
 # `mockallan` - Lightweight HTTP Server Mock
 
-![mockallan version](https://img.shields.io/pypi/v/mockallan.svg)
+[![](https://img.shields.io/pypi/v/mockallan.svg)](https://pypi.org/project/mockallan/)
 
 `mockallan` is a lightweight HTTP server mock used as a replacement for a production HTTP server in testing environments.
 
