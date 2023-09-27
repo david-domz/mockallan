@@ -22,7 +22,7 @@ class AppHandler():
 			('GET', '/assert-called-with'): self._assert_called_with,
 			('GET', '/assert-called-once-with'): self._assert_called_once_with,
 			('GET', '/call-args'): ...,
-			('GET', '/call-count'): ...,
+			('GET', '/call-count'): self._call_count,
 			('GET', '/method-calls'): ...
 		}
 
@@ -72,7 +72,7 @@ class AppHandler():
 		if response is None:
 			response = self._config.default_response
 
-		self._history.request_records.append(RequestRecord(0.0, request, response))
+		self._history.append(request, response)
 
 		return response
 
@@ -112,7 +112,7 @@ class AppHandler():
 				body=f'{{"message": "Bad request. Query parameter {e} not found."}}'
 			)
 		else:
-			call_count = self._history.call_count(method_called, path_called)
+			call_count = self._history.call_count(endpoint_called)
 
 			if call_count > 0:
 				response = self._create_assertion_success_response(request, endpoint_called, call_count)
@@ -128,7 +128,7 @@ class AppHandler():
 		path_called = request.query['path'][0]
 		endpoint_called = (method_called, path_called)
 
-		call_count = self._history.call_count(method_called, path_called)
+		call_count = self._history.call_count(endpoint_called)
 
 		if call_count == 1:
 			response = self._create_assertion_success_response(request, endpoint_called, call_count)
@@ -174,6 +174,50 @@ class AppHandler():
 				response = self._create_assertion_success_response(request, endpoint_called, 1)
 
 		return response
+
+
+	def _call_count(self, request: HTTPRequest) -> HTTPResponse:	# pylint: disable=unused-argument
+
+		method = request.query.get('method')
+		path = request.query.get('path')
+		if method:
+			if path:
+				# Endpoint's call count
+				method_called = method[0]
+				path_called = path[0]
+				endpoint_called = (method_called, path_called)
+				count = self._history.call_count(endpoint_called)
+				response = self._create_call_count_response(count, endpoint_called)
+			else:
+				response = self._create_query_param_not_found_error_response(KeyError('path'))
+		else:
+			if path:
+				response = self._create_query_param_not_found_error_response(KeyError('method'))
+			else:
+				# Total call count
+				count = self._history.call_count()
+				response = self._create_call_count_response(count)
+
+		return response
+
+
+	@staticmethod
+	def _create_call_count_response(count: int, endpoint: tuple[str, str] | None = None) -> HTTPResponse:
+
+		body = {
+			"status": 200,
+			"call_count": count
+		}
+		if endpoint:
+			body['method'] = endpoint[0]
+			body['path'] = endpoint[1]
+
+		return HTTPResponse(
+			200,
+			headers={'Content-Type': 'application/json'},
+			body=body
+		)
+
 
 	@staticmethod
 	def _create_json_schema_error_response(
@@ -229,13 +273,13 @@ class AppHandler():
 
 
 	@staticmethod
-	def _create_query_param_not_found_error_response(e: Exception) -> HTTPResponse:
+	def _create_query_param_not_found_error_response(key_error: KeyError) -> HTTPResponse:
 
 		return HTTPResponse(
 			400,
 			headers={'Content-Type': 'application/json+error'},
 			body={
 				"status": 400,
-				"message": f"Bad request. Query parameter {e} not found."
+				"message": f"Bad request. Query parameter {key_error} not found."
 			}
 		)

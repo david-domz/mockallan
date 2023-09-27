@@ -4,14 +4,14 @@ from app_handler import HTTPRequest, History
 
 def test_call_count_empty_history(empty_history: History):
 
-	assert empty_history.call_count('GET', '/path') == 0
+	assert empty_history.call_count(('GET', '/path')) == 0
 
 
 def test_call_count(history: History):
 
-	assert history.call_count('GET', '/path/1') == 1
-	assert history.call_count('POST', '/path/2') == 3
-	assert history.call_count('PUT', '/path/4') == 1
+	assert history.call_count(('GET', '/path/1')) == 1
+	assert history.call_count(('POST', '/path/2')) == 3
+	assert history.call_count(('PUT', '/path/4')) == 1
 
 
 def test_assert_called_once_with_text_plain_success(history: History):

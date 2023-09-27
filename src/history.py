@@ -13,6 +13,8 @@ class RequestRecord:
 
 @dataclass
 class History:
+
+	# TO DO: Make attrs private to enforce consistency
 	request_records: list[RequestRecord] = field(default_factory=list)
 	endpoint_record_mapping: dict = field(default_factory=dict)
 
@@ -36,14 +38,12 @@ class History:
 			self.append(request_response[0], request_response[1])
 
 
-	def call_count(self, method: str, path: str) -> int:
-		# TO DO: tuple[str, str]
+	def call_count(self, endpoint: tuple[str, str] | None = None) -> int:
 
-		call_count = 0
-		for request_record in self.request_records:
-			if request_record.request.method == method and request_record.request.path == path:
-				call_count += 1
-		return call_count
+		if endpoint is None:
+			return len(self.request_records)
+
+		return len(self.endpoint_record_mapping.get(endpoint, []))
 
 
 	def call_args(self) -> HTTPRequest | None:
