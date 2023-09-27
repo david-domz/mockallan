@@ -49,7 +49,8 @@ def http_request_handler_class_factory(app_handler: AppHandler):
 			parse_result = urllib.parse.urlparse(self.path)
 			query = urllib.parse.parse_qs(parse_result.query)
 
-			body = self.rfile.read(0)
+			content_length = int(self.headers['Content-Length'])
+			body = self.rfile.read(content_length)
 			body_str = body.decode('utf-8')
 			request = HTTPRequest('POST', parse_result.path, query, self.headers, body_str)
 
