@@ -19,8 +19,8 @@ class AppHandler():
 			# Assertion API
 			('GET', '/assert-called'): self._assert_called,
 			('GET', '/assert-called-once'): self._assert_called_once,
-			('GET', '/assert-called-with'): self._assert_called_with,
-			('GET', '/assert-called-once-with'): self._assert_called_once_with,
+			('POST', '/assert-called-with'): self._assert_called_with,
+			('POST', '/assert-called-once-with'): self._assert_called_once_with,
 			('GET', '/call-args'): ...,
 			('GET', '/call-count'): self._call_count,
 			('GET', '/method-calls'): ...
@@ -147,12 +147,12 @@ class AppHandler():
 		except KeyError as e:
 			response = self._create_query_param_not_found_error_response(e)
 		else:
-			call_count = self._history.call_count(method_called, path_called)
-
-			if call_count > 0:
-				response = self._create_assertion_success_response(request, endpoint_called, call_count)
+			try:
+				self._history.assert_called_with(endpoint_called, request)
+			except AssertionError as e:
+				response = self._create_assertion_error_response(request, endpoint_called, 1, 0)
 			else:
-				response = self._create_assertion_error_response(request, endpoint_called, 1, call_count)
+				response = self._create_assertion_success_response(request, endpoint_called, 1)
 
 		return response
 
