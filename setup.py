@@ -8,8 +8,15 @@ setup(
 	version='0.0.2',
 	author="David Domínguez",
 	author_email="david.7b8@gmail.com",
-	description='HTTP server mock designed for use as a substitute for a production HTTP server within a testing environment.',
-	py_modules=['mockallan', 'app_handler', 'history', 'request', 'stub_config'],
+	description='Lightweight HTTP server mock used as a replacement for a production HTTP server in testing environments.',
+	py_modules=[
+		'mockallan',
+		'app_handler',
+		'history',
+		'request',
+		'stub_config',
+		'validators'
+	],
 	package_dir={'': 'src'},
 	long_description_content_type="text/markdown",
 	long_description=long_description,

@@ -15,9 +15,9 @@
 
 - Request history enables robust assertion capabilities and diagnostics.
 
-- API naming adheres to the `Mock` class from the Python `unittest.mock` standard library.
-
 - Concise codebase of under 1000 lines, focusing on simplicity and making the best use of resources.
+
+- API naming adheres to the `Mock` class from the Python `unittest.mock` standard library.
 
 ## Requirements
 
