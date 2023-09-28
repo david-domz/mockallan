@@ -233,9 +233,7 @@ The Assertion API allows for the validation of expected requests.
 
 ## Naming
 
-Both Stub Configuration API and Assertion API naming are inspired by class `Mock` from the standard python package `unittest.mock`.
-
-Python developers already familiar with this package can quickly become familiar with `mockallan` API.
+Stub Configuration API and Assertion API naming are inspired by class `Mock` from the standard python package `unittest.mock`.
 
 
 ## Feedback
