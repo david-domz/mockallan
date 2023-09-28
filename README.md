@@ -4,11 +4,12 @@
 
 `mockallan` is a lightweight HTTP server mock used as a replacement for a production HTTP server in testing environments.
 
+
 ## Features
 
 - Command line interface for continuous integration (CI) and testing environments.
 
-- Assertion capabilities for validating expected requests. JSON and XML schema validation support.
+- Assertion capabilities for validating expected requests. JSON schema, XML schema, and regex validation support.
 
 - Stub capabilities with configurable responses.
 
@@ -49,7 +50,7 @@ For example, if you expect the software under test to perform a `POST /orders/or
 
 
 ```bash
-$ curl -s -X POST http://localhost:8080/orders/order_e2b9/products --data '{'product_id': 'foo', 'description': 'bar', 'quantity': 1}'
+$ curl -s -X POST http://localhost:8080/orders/order_e2b9/products --data '{'product_id': 'foo', 'description': 'bar', 'amount': 1}'
 ```
 
 `mockallan` will reply with the factory default response.
@@ -136,6 +137,35 @@ $ curl -X GET http://localhost:8080/assert-called-once?method=POST&path=/orders/
 If the assertion request returns 200 then everything went fine. Otherwise, if it returns 409 then the assertion failed and the software under test did not behave as expected.
 
 
+## Using Assertions (`POST /assert-called-with` and `POST /assert-called-once-with`)
+
+The following validation assertions can be used when performing assertion requests with `POST /assert-called-with` or `POST /assert-called-once-with`. The body corresponds to the JSON schema, XML schema, or regex to match as shown below.
+
+### JSON Schema Validation Assertions
+
+Add `Content-Type: application/schema+json` to the assertion request and place the JSON schema message in the body.
+
+```bash
+$ curl -X POST --header 'Content-Type: application/json+schema' http://localhost:8080/assert-called-with?method=POST&path=/orders/order_e2b9/products --data '...JSON schema here...'
+```
+
+### XML Schema Validation Assertions
+
+Add `Content-Type: application/xml` to the assertion request and place the XML schema message in the body.
+
+```bash
+$ curl -X POST --header 'Content-Type: application/xml' http://localhost:8080/assert-called-with?method=POST&path=/orders/order_e2b9/products --data '...XML schema here...'
+```
+
+### Regex Validation Assertions
+
+Add the custom header `X-Mockallan-Validator: regex` to the assertion request and place the regular expression in the body. 
+
+```bash
+$ curl -X POST --header 'X-Mockallan-Validator: regex' http://localhost:8080/assert-called-with?method=POST&path=/orders/order_e2b9/products --data '...regex here...'
+```
+
+
 ## Stub Configuration JSON
 
 The Stub Configuration JSON format configures `mockallan` responses.
@@ -188,12 +218,14 @@ The Stub Configuration JSON format configures `mockallan` responses.
 
 ## Assertion API
 
+The Assertion API allows for the validation of expected requests.
+
 |Method|Path|Request Body|Status|Response Body|
 |-|-|-|-|-|
 |GET|/assert-called|-|200 OK; 409 Conflict|Assertion success or error message|
 |GET|/assert_called_once|-|200 OK; 409 Conflict|Assertion success or error message|
-|POST|/assert-called-with|Matching JSON schema or message body|200 OK; 409 Conflict|Assertion success or error message|
-|POST|/assert-called-once-with|Matching JSON schema or message body|200 OK; 409 Conflict|Assertion success or error message|
+|POST|/assert-called-with|JSON schema, XML schema, regex or message body|200 OK; 409 Conflict|Assertion success or error message|
+|POST|/assert-called-once-with|JSON schema, XML schema, regex or message body|200 OK; 409 Conflict|Assertion success or error message|
 |GET|/call-args|-|200 OK|The request body that the mock was last called with|
 |GET|/call-args-list|-|200 OK|List of all the requests made to the mock in sequence.|
 |GET|/call-count|-|200 OK|Request count|
