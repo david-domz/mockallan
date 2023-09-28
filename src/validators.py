@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
 import re
 from lxml import etree
 import jsonschema
@@ -40,7 +39,7 @@ class JSONSchemaValidator(Validator):
 		return True
 
 
-class XMLSchemaValidator():
+class XMLSchemaValidator(Validator):
 	"""Validates a XML request with a XML schema. """
 
 	def __init__(self, validation_request: HTTPRequest):
@@ -51,7 +50,7 @@ class XMLSchemaValidator():
 		return self._schema.validate(etree.fromstring(request.body))
 
 
-class RegexValidator():
+class RegexValidator(Validator):
 	"""Validates that the request body matches the regex in the validation request body.
 
 	Requires that the assert request includes the header
