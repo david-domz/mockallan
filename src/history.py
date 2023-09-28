@@ -1,7 +1,12 @@
 from dataclasses import dataclass, field
-from lxml import etree
-import jsonschema
 from request import HTTPRequest, HTTPResponse
+from validators import (
+	Validator,
+	IsEqualValidator,
+	JSONSchemaValidator,
+	XMLSchemaValidator,
+	RegexValidator
+)
 
 
 @dataclass
@@ -92,8 +97,9 @@ class History:
 		except KeyError:
 			...
 		else:
+			validator = self._resolve_validator(request)
 			for record in records:
-				if History._request_matches(record.request, request):
+				if validator.validate(record.request):
 					return
 
 		raise AssertionError('Not called')
@@ -108,8 +114,9 @@ class History:
 		except KeyError:
 			...
 		else:
+			validator = self._resolve_validator(request)
 			for record in records:
-				if History._request_matches(record.request, request):
+				if validator.validate(record.request):
 					match_count += 1
 					if match_count > 1:
 						raise AssertionError('Called more than once')
@@ -118,36 +125,18 @@ class History:
 
 
 	@staticmethod
-	def _request_matches(record_request: HTTPRequest, validation_request: HTTPRequest) -> bool:
-		"""
+	def _resolve_validator(validation_request: HTTPRequest) -> Validator:
 
-		Returns:
-			True if record_request matches validation_request, False otherwise.
+		validation_content_type = validation_request.headers.get('Content-Type')
 
-		Raises:
-			jsonschema.SchemaError	Invalid JSON-schema supplied in `validation_request`.
+		if validation_content_type == 'application/schema+json':
+			return JSONSchemaValidator(validation_request)
 
-		"""
-		matches = False
-		content_type = record_request.headers.get('Content-Type')
-		with_content_type = validation_request.headers.get('Content-Type')
+		if validation_content_type == 'application/xml':
+			return XMLSchemaValidator(validation_request)
 
-		if with_content_type == 'application/schema+json' and content_type == 'application/json':
+		validator_header = validation_request.headers.get('X-Mockallan-Validator')
+		if validator_header == 'regex':
+			return RegexValidator(validation_request)
 
-			try:
-				jsonschema.validate(record_request.body, validation_request.body)
-				matches = True
-			except jsonschema.ValidationError:
-				...
-		elif with_content_type == 'application/xml' and content_type == 'application/xml':
-
-			xml_doc = etree.fromstring(record_request.body)
-			schema = etree.XMLSchema(etree.fromstring(validation_request.body))
-			matches = schema.validate(xml_doc)
-		else:
-			# text/plain
-			# application/octet-stream
-			# application/json
-			matches = record_request == validation_request
-
-		return matches
+		return IsEqualValidator(validation_request)
