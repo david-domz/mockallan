@@ -45,14 +45,13 @@ setup(
 		"Development Status :: 4 - Beta",
 		"Environment :: Console",
 		"Intended Audience :: Developers",
+		"License :: OSI Approved :: MIT License",
 		"Programming Language :: Python :: 3.10",
+		"Programming Language :: Python :: 3.11",
 		"Topic :: Software Development :: Testing",
 		"Topic :: Software Development :: Testing :: Mocking",
 		"Topic :: Internet :: WWW/HTTP",
 		"Topic :: Software Development :: Libraries :: Python Modules",
-		"Operating System :: Unix",
-		"Operating System :: MacOS :: MacOS X",
-		"Operating System :: Microsoft :: Windows",
-		"Operating System :: OS Independent",
+		"Operating System :: OS Independent"
 	]
 )
