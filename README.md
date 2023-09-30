@@ -8,16 +8,17 @@
 
 ## Features
 
-- Command line interface for continuous integration (CI) and testing environments.
+- Command-line interface for continuous integration (CI) and testing environments.
 
-- Assert expected requests performed by the software under test using appropriate validators including
+- The Assertion API enables the assertion of expected requests performed by the software under test based on the endpoint, request body or number of requests.
+- Match the request body in assertions based on
   - JSON schema
   - XML schema
   - Regular expressions
 
-- Configurable responses.
+- Use the Stub Configuration API to configure default and per-endpoint responses.
 
-- The request history enables robust assertion capabilities and diagnostics.
+- Request history enables robust assertion capabilities and diagnostics.
 
 - Concise codebase of under 1000 lines, focusing on simplicity and making the best use of resources.
 
