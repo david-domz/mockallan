@@ -73,7 +73,7 @@ class History:
 
 
 	def assert_called(self, endpoint: tuple[str, str]):
-		"""Assert that the mock was called at least once. """
+		"""Assert that the endpoint was called at least once. """
 
 		if self.endpoint_record_mapping.get(endpoint) is None:
 			raise AssertionError('Not called')

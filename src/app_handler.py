@@ -36,23 +36,16 @@ class AppHandler():
 
 
 	def handle_request(self, request: HTTPRequest) -> HTTPResponse:
-		"""
 
-		TO DO: Better naming
-			E.g. _handle_config_request()
-				_handle_assert_request()
-				_handle_test_request()
-
-		"""
-		response = self._handle_config_request(request)
+		response = self._handle_api_request(request)
 		if response is None:
 			response = self._handle_test_request(request)
 
 		return response
 
 
-	def _handle_config_request(self, request: HTTPRequest) -> HTTPResponse | None:
-		"""Handles request by system under test. """
+	def _handle_api_request(self, request: HTTPRequest) -> HTTPResponse | None:
+		"""Handles Stub Configuration/Assertion API request by the test client. """
 
 		endpoint = (request.method.upper(), request.path)
 		method = self._api_endpoints.get(endpoint)
@@ -66,11 +59,8 @@ class AppHandler():
 
 
 	def _handle_test_request(self, request: HTTPRequest) -> HTTPResponse:
-		"""Handles request by system under test. """
 
 		response = self._config.lookup(request)
-		if response is None:
-			response = self._config.default_response
 
 		self._history.append(request, response)
 
@@ -90,8 +80,9 @@ class AppHandler():
 
 	def _put_config(self, request: HTTPRequest) -> HTTPResponse:
 
-		request_body_json = json.loads(request.body)
-		self._config.load_json(request_body_json)
+		if isinstance(request.body, str):
+			request.body = json.loads(request.body)
+		self._config.load_json(request.body)
 
 		return HTTPResponse(204)
 
