@@ -1,6 +1,7 @@
 # `mockallan` - Lightweight HTTP Server Mock
 
-[![](https://img.shields.io/pypi/v/mockallan.svg)](https://pypi.org/project/mockallan/)
+[![PyPI package version](https://badge.fury.io/py/mockallan.svg)](https://pypi.org/project/mockallan/) [![Supported Python versions](https://img.shields.io/pypi/pyversions/mockallan.svg)](https://pypi.org/project/mockallan/)
+
 
 `mockallan` is a lightweight HTTP server mock used as a replacement for a production HTTP server in testing environments.
 
@@ -9,11 +10,14 @@
 
 - Command line interface for continuous integration (CI) and testing environments.
 
-- Assertion capabilities for validating expected requests. JSON schema, XML schema, and regex validation support.
+- Assert expected requests performed by the software under test using appropriate validators including
+  - JSON schema
+  - XML schema
+  - Regular expressions
 
-- Stub capabilities with configurable responses.
+- Configurable responses.
 
-- Request history enables robust assertion capabilities and diagnostics.
+- The request history enables robust assertion capabilities and diagnostics.
 
 - Concise codebase of under 1000 lines, focusing on simplicity and making the best use of resources.
 
@@ -36,15 +40,14 @@ $ pip install mockallan
 
 1) Run `mockallan.py`
 
-
 ```bash
 $ python mockallan.py
 Listening on 0.0.0.0:8080
 ```
 
-2) Configure the hostname and port for Mockallan in your software under test and run it.
+1) Configure `mockallan` hostname and port in your software under test and run it.
 
-If you currently don't have any software whose requests you want to test, enter the following command to simulate a request performed by any software under test."
+If you currently don't have any software whose requests you want to test, you can simulate a request performed by software under test.
 
 For example, if you expect the software under test to perform a `POST /orders/order_e2b9/products` run the following command.
 
@@ -119,7 +122,7 @@ Otherwise, if it returns 409 then the assertion failed and the software under te
 }
 ```
 
-2) Run `mockallan.py` and provide the JSON file as an argument using the -c option.
+1) Run `mockallan.py` and provide the JSON file.
 
 ```bash
 $ python mockallan.py -c stub_config.json
@@ -127,19 +130,19 @@ $ python mockallan.py -c stub_config.json
 
 3) Execute the software under test. `mockallan` will reply with the configured response to the `POST /orders/order_e2b9/products`.
 
-
-4) Use the Assertion API to make assertions on expected outcomes.
+4) Use the Assertion API to make assertions on expected requests.
 
 ```bash
 $ curl -X GET http://localhost:8080/assert-called-once?method=POST&path=/orders/order_e2b9/products
 ```
 
-If the assertion request returns 200 then everything went fine. Otherwise, if it returns 409 then the assertion failed and the software under test did not behave as expected.
+- If the assertion request returns 200 then everything went fine.
+- If it returns 409 then the assertion failed and the software under test did not behave as expected.
 
 
 ## Using Assertions (`POST /assert-called-with` and `POST /assert-called-once-with`)
 
-The following validation assertions can be used when performing assertion requests with `POST /assert-called-with` or `POST /assert-called-once-with`. The body corresponds to the JSON schema, XML schema, or regex to match as shown below.
+The following validation assertions can be used when performing assertion requests with `POST /assert-called-with` or `POST /assert-called-once-with`. The body corresponds to the JSON schema, XML schema, or regular expression to match as shown below.
 
 ### JSON Schema Validation Assertions
 
