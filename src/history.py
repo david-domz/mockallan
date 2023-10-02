@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from datetime import datetime
 from request import HTTPRequest, HTTPResponse
 from validators import (
 	Validator,
@@ -11,7 +12,7 @@ from validators import (
 
 @dataclass
 class RequestRecord:
-	timestamp: float
+	timestamp: datetime
 	request: HTTPRequest
 	response: HTTPResponse
 
@@ -25,7 +26,7 @@ class History:
 
 	def append(self, request: HTTPRequest, response: HTTPResponse):
 
-		record = RequestRecord(0.0, request, response)
+		record = RequestRecord(datetime.utcnow(), request, response)
 		endpoint = (request.method, request.path)
 
 		self.request_records.append(record)
@@ -71,11 +72,7 @@ class History:
 
 
 	def call_args_list(self)-> list[RequestRecord]:
-		"""
 
-		This is a list of all the calls made to the mock object in sequence (so the length of the list is the number of times it has been called).
-
-		"""
 		return self.request_records
 
 

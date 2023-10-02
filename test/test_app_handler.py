@@ -549,3 +549,37 @@ def test_handle_request_get_call_args_status_409(app_handler: AppHandler):
 	)
 	assert response.code == 409
 	assert response.headers['Content-Type'] == 'application/json+error'
+
+
+def test_handle_request_get_call_args_list_status_200(app_handler: AppHandler):
+	"""
+	
+	Given:
+		- 1 request was made
+	When:
+		- GET /call-args-list
+	Then:
+		- Response has status 200
+
+	"""
+	app_handler.handle_request(
+		HTTPRequest(
+			'POST',
+			'/path/1823',
+			headers={'Content-Type': 'application/json'},
+			body={
+				"foo": "bar"
+			}
+		)
+	)
+
+	response = app_handler.handle_request(
+		HTTPRequest(
+			'GET',
+			'/call-args-list'
+		)
+	)
+	assert response.code == 200
+	assert response.headers['Content-Type'] == 'application/json'
+	assert len(response.body['items']) == 1
+

@@ -1,7 +1,7 @@
 import json
 import jsonschema
 from stub_config import StubConfig, HTTPRequest, HTTPResponse
-from history import History
+from history import History, RequestRecord
 
 
 class AppHandler():
@@ -22,6 +22,7 @@ class AppHandler():
 			('POST', '/assert-called-with'): self._assert_called_with,
 			('POST', '/assert-called-once-with'): self._assert_called_once_with,
 			('GET', '/call-args'): self._call_args,
+			('GET', '/call-args-list'): self._call_args_list,
 			('GET', '/call-count'): self._call_count
 		}
 
@@ -192,6 +193,41 @@ class AppHandler():
 			headers = {'Content-Type': content_type}
 
 		return HTTPResponse(status, headers, body)
+
+
+	def _call_args_list(self, request: HTTPRequest) -> HTTPResponse:
+		"""
+
+		Returns:
+			HTTPResponse	A 200 response with the Content-Type application/json and
+				a list of request records in the body.
+
+		"""
+		def create_request_record(request_record: RequestRecord) -> dict:
+
+			# E.g. 2023-10-02T21:48:16Z
+			timestamp_str = request_record.timestamp.isoformat(sep='T', timespec='seconds') + 'Z'
+
+			return {
+				"date-time": timestamp_str,
+				"request": (
+					f'{request_record.request.method} {request_record.request.path} '
+					f'{request_record.request.body}'
+				),
+				"response": (
+					f'{request_record.response.code} {request_record.response.body}'
+				)
+			}
+
+		request_records = self._history.call_args_list()
+
+		status = 200
+		headers = {'Content-Type': 'application/json'}
+		records_json = {
+			"items": [create_request_record(request_record) for request_record in request_records]
+		}
+
+		return HTTPResponse(status, headers, records_json)
 
 
 	def _call_count(self, request: HTTPRequest) -> HTTPResponse:	# pylint: disable=unused-argument
