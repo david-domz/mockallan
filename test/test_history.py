@@ -22,15 +22,24 @@ def test_call_count_none_endpoint(history: History):
 
 def test_call_args_empty_history(empty_history: History):
 
-	assert empty_history.call_args() is None
+	with pytest.raises(AssertionError):
+		empty_history.call_args()
 
 
 def test_call_args(history: History):
 
-	request = history.call_args()
+	content_type, body = history.call_args()
 
-	assert request.method == 'PUT'
-	assert request.path == '/path/xml/1'
+	assert content_type == 'application/xml'
+	assert body == '''
+<individual>
+	<name>Liam Campbell</name>
+	<address>
+		<zip>AB38 9RX</zip>
+		<city>Craigellachie</city>
+	</address>
+</individual>'''
+
 
 
 def test_call_args_list(history: History):

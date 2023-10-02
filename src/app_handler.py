@@ -1,7 +1,7 @@
 import json
 import jsonschema
 from stub_config import StubConfig, HTTPRequest, HTTPResponse
-from history import History, RequestRecord
+from history import History
 
 
 class AppHandler():
@@ -21,9 +21,8 @@ class AppHandler():
 			('GET', '/assert-called-once'): self._assert_called_once,
 			('POST', '/assert-called-with'): self._assert_called_with,
 			('POST', '/assert-called-once-with'): self._assert_called_once_with,
-			('GET', '/call-args'): ...,
-			('GET', '/call-count'): self._call_count,
-			('GET', '/method-calls'): ...
+			('GET', '/call-args'): self._call_args,
+			('GET', '/call-count'): self._call_count
 		}
 
 		self._history = history
@@ -53,6 +52,9 @@ class AppHandler():
 			try:
 				return method(request)
 			except jsonschema.SchemaError as e:
+				# Raised by
+				# History.assert_called_with() or
+				# History.assert_called_once_with()
 				return self._create_json_schema_error_response(request, e)
 
 		return None
@@ -69,12 +71,10 @@ class AppHandler():
 
 	def _get_config(self, request: HTTPRequest) -> HTTPResponse:	# pylint: disable=unused-argument
 
-		response_json = self._config.dump_json()
-		response_str = json.dumps(response_json)
 		return HTTPResponse(
 			200,
 			{'Content-type': 'application/json'},
-			response_str
+			self._config.dump_json()
 		)
 
 
@@ -94,13 +94,14 @@ class AppHandler():
 			path_called = request.query['path'][0]
 			endpoint_called = (method_called, path_called)
 		except KeyError as e:
-			# TODO
-			# JSON response body with status, type, title, detail
-			# dumps()
 			response = HTTPResponse(
 				400,
 				headers={'Content-Type': 'application/json+error'},
-				body=f'{{"message": "Bad request. Query parameter {e} not found."}}'
+				body={
+					"status": 400,
+					"type": "missing-query-param",
+					"message": "Bad request. Query parameter {e} not found."
+				}
 			)
 		else:
 			call_count = self._history.call_count(endpoint_called)
@@ -167,6 +168,32 @@ class AppHandler():
 		return response
 
 
+	def _call_args(self, request: HTTPRequest) -> HTTPResponse:
+		"""
+
+		Returns:
+			HTTPResponse	A 200 response with the Content-Type and body that the mock was
+				last called with.
+					A 409 response if the mock wasn't called yet.
+
+		"""
+		try:
+			content_type, body = self._history.call_args()
+		except AssertionError:
+			status = 409
+			headers = {'Content-Type': 'application/json+error'}
+			body = {
+				"status": status,
+				"type": "assertion-error",
+				"title": "No request was performed by the software under test (SUT)",
+			}
+		else:
+			status = 200
+			headers = {'Content-Type': content_type}
+
+		return HTTPResponse(status, headers, body)
+
+
 	def _call_count(self, request: HTTPRequest) -> HTTPResponse:	# pylint: disable=unused-argument
 
 		method = request.query.get('method')
@@ -224,7 +251,7 @@ class AppHandler():
 			"detail": f"{e.__class__.__name__}: {e}"
 		}
 
-		return HTTPResponse(status, headers, json.dumps(body))
+		return HTTPResponse(status, headers, body)
 
 
 	@staticmethod
@@ -271,6 +298,7 @@ class AppHandler():
 			headers={'Content-Type': 'application/json+error'},
 			body={
 				"status": 400,
+				"type": "missing-query-param",
 				"message": f"Bad request. Query parameter {key_error} not found."
 			}
 		)

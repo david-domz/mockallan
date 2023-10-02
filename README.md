@@ -213,6 +213,8 @@ The Stub Configuration JSON format configures `mockallan` responses.
 
 ## Stub Configuration API
 
+The Stub Configuration API allows the test client to configure the mock at runtime.
+
 |Method|Path|Request Body|Status|Response Body|
 |-|-|-|-|-|
 |PUT|/configure|JSON stub configuration|204|-|
@@ -226,11 +228,11 @@ The Assertion API allows for the validation of expected requests.
 |Method|Path|Request Body|Status|Response Body|
 |-|-|-|-|-|
 |GET|/assert-called|-|200 OK; 409 Conflict|Assertion success or error message|
-|GET|/assert_called_once|-|200 OK; 409 Conflict|Assertion success or error message|
+|GET|/assert-called-once|-|200 OK; 409 Conflict|Assertion success or error message|
 |POST|/assert-called-with|JSON schema, XML schema, regex or message body|200 OK; 409 Conflict|Assertion success or error message|
 |POST|/assert-called-once-with|JSON schema, XML schema, regex or message body|200 OK; 409 Conflict|Assertion success or error message|
 |GET|/call-args|-|200 OK|The request body that the mock was last called with|
-|GET|/call-args-list|-|200 OK|List of all the requests made to the mock in sequence.|
+|GET|/call-args-list|-|200 OK|List of all the requests made to the mock in sequence|
 |GET|/call-count|-|200 OK|Request count|
 
 

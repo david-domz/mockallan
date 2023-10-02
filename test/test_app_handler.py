@@ -297,6 +297,99 @@ def test_handle_request_get_assert_called_with_status_409(stub_config: StubConfi
 	assert assert_called_response.body['type'] == 'assertion-error'
 
 
+def test_handle_request_get_assert_called_with_status_400_missing_query_param(
+		stub_config: StubConfig,
+		app_handler: AppHandler):
+	"""
+
+	Given:
+		- POST /path/1823 with body 1823 has been called
+	When:
+		- GET /assert-called-with?method=POST without path query parameter
+	Then:
+		- handle_request() returns 400
+
+	"""
+	# Arrange
+	path = '/path/1823'
+
+	request = HTTPRequest(
+		'POST',
+		path,
+		headers={
+			'Content-Type': 'text/plain'
+		},
+		body='1823'
+	)
+	app_handler.handle_request(request)
+
+	# Act
+	assert_called_request = HTTPRequest(
+		'POST',
+		'/assert-called-with',
+		{
+			'method': ['POST']
+			# path query parameter missing
+		},
+		headers={
+			'Content-Type': 'text/plain'
+		},
+		body='2023'
+	)
+	assert_called_response = app_handler.handle_request(assert_called_request)
+
+	assert assert_called_response.code == 400
+	assert assert_called_response.body['type'] == 'missing-query-param'
+
+
+def test_handle_request_get_assert_called_with_status_400_json_schema_error(
+		stub_config: StubConfig,
+		app_handler: AppHandler):
+	"""
+
+	Given:
+		- POST /path/1823 with body 1823 has been called
+	When:
+		- GET /assert-called-with?method=POST without path query parameter
+	Then:
+		- handle_request() returns 400
+
+	"""
+	# Arrange
+	path = '/path/1823'
+
+	request = HTTPRequest(
+		'POST',
+		path,
+		headers={
+			'Content-Type': 'application/json'
+		},
+		body={
+			"foo": "bar"
+		}
+	)
+	app_handler.handle_request(request)
+
+	# Act
+	assert_called_request = HTTPRequest(
+		'POST',
+		'/assert-called-with',
+		{
+			'method': ['POST'],
+			'path': [path]
+		},
+		headers={
+			'Content-Type': 'application/schema+json'
+		},
+		body='Bad JSON schema'
+	)
+	assert_called_response = app_handler.handle_request(assert_called_request)
+
+	assert assert_called_response.code == 400
+	assert assert_called_response.headers['Content-Type'] == 'application/json+error'
+	assert assert_called_response.body['type'] == 'json-schema-error'
+
+
 def test_handle_request_get_assert_called_once_with_status_200(stub_config: StubConfig, app_handler: AppHandler):
 	"""
 
@@ -401,3 +494,58 @@ def test_handle_request_get_call_count_per_endpoint_status_200(app_handler: AppH
 
 	# Assert
 	assert response.body['call_count'] == 2
+
+
+def test_handle_request_get_call_args_status_200(app_handler: AppHandler):
+	"""
+	
+	Given:
+		- 1 request was made
+	When:
+		- GET /call-args
+	Then:
+		- Response has status 200
+
+	"""
+	request_content_type = 'application/octet-stream'
+	request_body = b'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*'
+
+	app_handler.handle_request(
+		HTTPRequest(
+			'POST',
+			'/path/1823',
+			headers={'Content-Type': request_content_type},
+			body=request_body
+		)
+	)
+
+	response = app_handler.handle_request(
+		HTTPRequest(
+			'GET',
+			'/call-args'
+		)
+	)
+	assert response.code == 200
+	assert response.headers['Content-Type'] == request_content_type
+	assert response.body == request_body
+
+
+def test_handle_request_get_call_args_status_409(app_handler: AppHandler):
+	"""
+	
+	Given:
+		- No requests
+	When:
+		- GET /call-args
+	Then:
+		- Response has status 409
+
+	"""
+	response = app_handler.handle_request(
+		HTTPRequest(
+			'GET',
+			'/call-args'
+		)
+	)
+	assert response.code == 409
+	assert response.headers['Content-Type'] == 'application/json+error'

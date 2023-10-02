@@ -51,16 +51,23 @@ class History:
 		return len(self.endpoint_record_mapping.get(endpoint, []))
 
 
-	def call_args(self) -> HTTPRequest | None:
+	def call_args(self) -> tuple[str, dict | str | bytes]:
 		"""
+		
+		Returns:
+			Content-Type (str)
+			body (dict | str | bytes)
 
-		This is either None (if the mock hasn't been called), or the arguments that the mock was last called with.
+		Raises:
+			AssertionError	If no request was recorded yet.
 
 		"""
 		try:
-			return self.request_records[-1].request
-		except IndexError:
-			return None
+			request = self.request_records[-1].request
+		except IndexError as e:
+			raise AssertionError('No requests') from e
+
+		return request.headers.get('Content-Type'), request.body
 
 
 	def call_args_list(self)-> list[RequestRecord]:
