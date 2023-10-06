@@ -302,7 +302,7 @@ class AppHandler():
 			"status": status,
 			"type": "assertion-success",
 			"title": f"Assertion request {assert_request.method} {assert_request.path} succeeded",
-			"detail": f"{endpoint_called[0]} {endpoint_called[1]} was called {call_count} times."
+			"detail": f"{endpoint_called[0]} {endpoint_called[1]} called {call_count} times."
 		}
 
 		return HTTPResponse(status, headers, body)
@@ -320,7 +320,7 @@ class AppHandler():
 			"status": status,
 			"type": "assertion-error",
 			"title": f"Assertion request {assert_request.method} {assert_request.path} failed",
-			"detail": f"{endpoint_called[0]} {endpoint_called[1]} expected call count was {expected_call_count} but actual call count was {call_count}."
+			"detail": f"Expected {endpoint_called[0]} {endpoint_called[1]} to be called {expected_call_count} times. Called {call_count} times."
 		}
 
 		return HTTPResponse(status, headers, body)

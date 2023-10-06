@@ -1,21 +1,25 @@
-# `mockallan` - Lightweight HTTP Server Mock
+<!-- # `mockallan` - Lightweight HTTP Server Mock -->
+
+![image](mockallan-light.png)
 
 [![PyPI package version](https://badge.fury.io/py/mockallan.svg)](https://pypi.org/project/mockallan/) [![Supported Python versions](https://img.shields.io/pypi/pyversions/mockallan.svg)](https://pypi.org/project/mockallan/) [![Python package](https://github.com/david-domz/mockallan/actions/workflows/python-package.yml/badge.svg)](https://github.com/david-domz/mockallan/actions/workflows/python-package.yml)
 
 `mockallan` is a lightweight HTTP server mock used as a replacement for a production HTTP server in testing environments.
 
 
-## Features
+## Highlights
 
-- Command-line interface for continuous integration (CI) and testing environments.
+- Command-line interface for CI and testing environments.
 
-- The Assertion API enables the assertion of expected requests performed by the software under test based on the endpoint, request body or number of requests.
+- The Stub Configuration API allows to configure default and per-endpoint responses.
+
+- The Assertion API enables the assertion of expected requests performed by the software under test based on the endpoint and the request body.
+
 - Match the request body in assertions based on
-  - JSON schema
-  - XML schema
-  - Regular expressions
-
-- Use the Stub Configuration API to configure default and per-endpoint responses.
+  - JSON message equality
+  - JSON schema validation
+  - XML schema validation
+  - Regular expression matching
 
 - Request history enables robust assertion capabilities and diagnostics.
 
@@ -29,7 +33,7 @@
 
 ## Installation
 
-`mockallan` is available on PyPI. You can install using pip:
+`mockallan` is available on [PyPI](https://pypi.org/project/mockallan/). Install it using pip.
 
 ```bash
 $ pip install mockallan
@@ -45,11 +49,11 @@ $ python mockallan.py
 Listening on 0.0.0.0:8080
 ```
 
-1) Configure `mockallan` hostname and port in your software under test and run it.
+1) Run your software under test.
 
 If you currently don't have any software whose requests you want to test, you can simulate a request performed by software under test.
 
-For example, if you expect the software under test to perform a `POST /orders/order_e2b9/products` run the following command.
+For example, if we expect our software under test to perform a `POST /orders/order_e2b9/products` we can run the following command.
 
 
 ```bash
@@ -61,13 +65,11 @@ $ curl -s -X POST http://localhost:8080/orders/order_e2b9/products --data '{'pro
 ```json
 {
 	"status": "200",
-	"message": "This is mockallan factory default response.",
-	"detail": "Use the Stub Configuration API to configure default and per-endpoint responses."
+	"message": "This is mockallan factory default response."
 }
 ```
 
-3) Use `mockallan` Assertion API to make assertions on the expected response.
-
+3) Use the Assertion API to make assertions on the expected request.
 
 ```bash
 $ curl "http://localhost:8080/assert-called-once?method=POST&path=/orders/order_e2b9/products"
@@ -80,25 +82,26 @@ If the assertion request returns 200 then everything went fine.
 	"status": 200,
 	"type": "assertion-success",
 	"title": "Assertion request GET /assert-called-once succeeded",
-	"detail": "POST /orders/order_e2b9/products was called 1 times."
+	"detail": "POST /orders/order_e2b9/products called 1 times."
 }
 ```
 
-Otherwise, if it returns 409 then the assertion failed and the software under test did not behave as expected.
+If it returns 409 then the assertion failed and the software under test did not behave as expected.
 
 ```json
 {
 	"status": 409,
 	"type": "assertion-error",
 	"title": "Assertion request GET /assert-called-once failed",
-	"detail": "POST /orders/order_e2b9/products expected call count was 1 but actual call count was 2."
+	"detail": "Expected POST /orders/order_e2b9/products to be called once. Called 2 times."
 }
 ```
 
 ## Using Configurable Stub Responses
 
-1) Configure `mockallan` responses by editing a Stub Configuration JSON file. E.g. `stub_config.json`.
+1) Create a Stub Configuration JSON file as follows or use `stub_config.json` in this repository.
 
+E.g.
 ```json
 {
 	"endpoints": [
@@ -112,6 +115,7 @@ Otherwise, if it returns 409 then the assertion failed and the software under te
 				"headers": {
 					"Content-type": "application/json"
 				},
+				// body can be a JSON object or a string
 				"body": {
 					"status": "200",
 					"message": "This is the configured response for POST /orders/order_e2b9/products"
@@ -128,26 +132,26 @@ Otherwise, if it returns 409 then the assertion failed and the software under te
 $ python mockallan.py -c stub_config.json
 ```
 
-3) Execute the software under test. `mockallan` will reply with the configured response to the `POST /orders/order_e2b9/products`.
+3) Run the software under test. The mock will reply with the configured response for `POST /orders/order_e2b9/products`.
 
 4) Use the Assertion API to make assertions on expected requests.
 
 ```bash
-$ curl -X GET http://localhost:8080/assert-called-once?method=POST&path=/orders/order_e2b9/products
+$ curl -X GET 'http://localhost:8080/assert-called-once?method=POST&path=/orders/order_e2b9/products'
 ```
 
-- If the assertion request returns 200 then everything went fine.
-- If it returns 409 then the assertion failed and the software under test did not behave as expected.
+If the assertion request returns 200 then everything went fine. If it returns 409 then the assertion failed and the software under test did not behave as expected.
 
 
-## Using Assertions (`POST /assert-called-with` and `POST /assert-called-once-with`)
+## Using Assertions `with`
 
-The following validation assertions can be used when performing assertion requests with `POST /assert-called-with` or `POST /assert-called-once-with`. The body corresponds to the JSON schema, XML schema, or regular expression to match as shown below.
+The following validation can be used when performing assertion requests with `POST /assert-called-with` or `POST /assert-called-once-with`. The request body corresponds to the JSON object, the JSON schema, XML schema, or regular expression to match as shown below.
 
 ### JSON Schema Validation Assertions
 
 Add `Content-Type: application/schema+json` to the assertion request and place the JSON schema message in the body.
 
+E.g.
 ```bash
 $ curl -X POST --header 'Content-Type: application/json+schema' http://localhost:8080/assert-called-with?method=POST&path=/orders/order_e2b9/products --data '...JSON schema here...'
 ```
@@ -156,6 +160,7 @@ $ curl -X POST --header 'Content-Type: application/json+schema' http://localhost
 
 Add `Content-Type: application/xml` to the assertion request and place the XML schema message in the body.
 
+E.g.
 ```bash
 $ curl -X POST --header 'Content-Type: application/xml' http://localhost:8080/assert-called-with?method=POST&path=/orders/order_e2b9/products --data '...XML schema here...'
 ```
@@ -164,12 +169,12 @@ $ curl -X POST --header 'Content-Type: application/xml' http://localhost:8080/as
 
 Add the custom header `X-Mockallan-Validator: regex` to the assertion request and place the regular expression in the body. 
 
+E.g.
 ```bash
 $ curl -X POST --header 'X-Mockallan-Validator: regex' http://localhost:8080/assert-called-with?method=POST&path=/orders/order_e2b9/products --data '...regex here...'
 ```
 
-
-## Stub Configuration JSON
+<!-- ## Stub Configuration JSON
 
 The Stub Configuration JSON format configures `mockallan` responses.
 
@@ -209,7 +214,7 @@ The Stub Configuration JSON format configures `mockallan` responses.
 		}
 	]
 }
-```
+``` -->
 
 ## Stub Configuration API
 
@@ -225,15 +230,15 @@ The Stub Configuration API allows the test client to configure the mock at runti
 
 The Assertion API allows for the validation of expected requests.
 
-|Method|Path|Request Body|Status|Response Body|
-|-|-|-|-|-|
-|GET|/assert-called|-|200 OK; 409 Conflict|Assertion success or error message|
-|GET|/assert-called-once|-|200 OK; 409 Conflict|Assertion success or error message|
-|POST|/assert-called-with|JSON schema, XML schema, regex or message body|200 OK; 409 Conflict|Assertion success or error message|
-|POST|/assert-called-once-with|JSON schema, XML schema, regex or message body|200 OK; 409 Conflict|Assertion success or error message|
-|GET|/call-args|-|200 OK|The request body that the mock was last called with|
-|GET|/call-args-list|-|200 OK|List of all the requests made to the mock in sequence|
-|GET|/call-count|-|200 OK|Request count|
+|Method|Path|Query Params|Request Body|Status|Response Body|
+|-|-|-|-|-|-|
+|GET|/assert-called|method, path|-|200 OK; 409 Conflict|Assertion success or error message|
+|GET|/assert-called-once|method, path|-|200 OK; 409 Conflict|Assertion success or error message|
+|POST|/assert-called-with|method, path|JSON object, JSON schema, XML schema or regex|200 OK; 409 Conflict|Assertion success or error message|
+|POST|/assert-called-once-with|method, path|JSON object, JSON schema, XML schema, regex or message body|200 OK; 409 Conflict|Assertion success or error message|
+|GET|/call-args|-|-|200 OK|The request body that the mock was last called with|
+|GET|/call-args-list|-|-|200 OK|List of all the requests made to the mock in sequence|
+|GET|/call-count|-|-|200 OK|Request count|
 
 
 ## Naming
@@ -243,6 +248,4 @@ Stub Configuration API and Assertion API naming are inspired by class `Mock` fro
 
 ## Feedback
 
-I value your feedback! If you've used `mockallan` and have suggestions, bug reports, or any other feedback, please let me know. You can reach out to me via [email](mailto:david.7b8@gmail.com).
-
-Thank you!
+I value your feedback! If you've tried `mockallan` and have suggestions, bug reports, or any other feedback, please let me know. You can reach out to me via [email](mailto:david.7b8@gmail.com). Thank you!

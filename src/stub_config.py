@@ -17,8 +17,7 @@ class StubConfig():
 		},
 		body={
 			"status": "200",
-			"message": "This is mockallan factory default response.",
-			"detail": "Use the Stub Configuration API to configure default and per-endpoint responses."
+			"message": "This is mockallan factory default response."
 		}
 	)
 
