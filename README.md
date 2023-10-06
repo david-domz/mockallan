@@ -16,7 +16,8 @@
 - The Assertion API enables the assertion of expected requests performed by the software under test based on the endpoint and the request body.
 
 - Match the request body in assertions based on
-  - JSON message equality
+  - text/plain message matching
+  - JSON message matching
   - JSON schema validation
   - XML schema validation
   - Regular expression matching

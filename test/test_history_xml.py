@@ -1,5 +1,6 @@
 import pytest
-from app_handler import HTTPRequest, History
+from request import ContentType, HTTPRequest
+from app_handler import History
 
 
 def test_assert_called_once_with_xml_schema_success(history: History):
@@ -9,9 +10,7 @@ def test_assert_called_once_with_xml_schema_success(history: History):
 	with_request = HTTPRequest(
 		'PUT',
 		'/path/xml/1',
-		headers={
-			'Content-Type': 'application/xml'
-		},
+		headers=ContentType.APPLICATION_XML,
 		body='''
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 	<xs:element name="individual">
@@ -41,9 +40,7 @@ def test_assert_called_once_with_xml_schema_assertion_error(history: History):
 	with_request = HTTPRequest(
 		'PUT',
 		'/path/xml/1',
-		headers={
-			'Content-Type': 'application/xml'
-		},
+		headers=ContentType.APPLICATION_XML,
 		body='''
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 	<xs:element name="individual">

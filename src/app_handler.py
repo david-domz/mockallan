@@ -1,6 +1,7 @@
 import json
 import jsonschema
-from stub_config import StubConfig, HTTPRequest, HTTPResponse
+from request import ContentType, HTTPRequest, HTTPResponse
+from stub_config import StubConfig
 from history import History, RequestRecord
 
 
@@ -74,7 +75,7 @@ class AppHandler():
 
 		return HTTPResponse(
 			200,
-			{'Content-type': 'application/json'},
+			ContentType.APPLICATION_JSON,
 			self._config.dump_json()
 		)
 
@@ -94,10 +95,10 @@ class AppHandler():
 			method_called = request.query['method'][0]
 			path_called = request.query['path'][0]
 			endpoint_called = (method_called, path_called)
-		except KeyError as e:
+		except KeyError:
 			response = HTTPResponse(
 				400,
-				headers={'Content-Type': 'application/json+error'},
+				headers=ContentType.APPLICATION_JSON_ERROR,
 				body={
 					"status": 400,
 					"type": "missing-query-param",
@@ -182,7 +183,7 @@ class AppHandler():
 			content_type, body = self._history.call_args()
 		except AssertionError:
 			status = 409
-			headers = {'Content-Type': 'application/json+error'}
+			headers = ContentType.APPLICATION_JSON_ERROR
 			body = {
 				"status": status,
 				"type": "assertion-error",
@@ -222,7 +223,7 @@ class AppHandler():
 		request_records = self._history.call_args_list()
 
 		status = 200
-		headers = {'Content-Type': 'application/json'}
+		headers = ContentType.APPLICATION_JSON
 		records_json = {
 			"items": [create_request_record(request_record) for request_record in request_records]
 		}
@@ -279,7 +280,7 @@ class AppHandler():
 			e: jsonschema.SchemaError) -> HTTPResponse:
 
 		status = 400
-		headers = {'Content-Type': 'application/json+error'}
+		headers = ContentType.APPLICATION_JSON_ERROR
 		body = {
 			"status": status,
 			"type": "json-schema-error",

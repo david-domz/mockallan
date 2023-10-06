@@ -1,5 +1,5 @@
 from pytest import fixture
-from request import HTTPRequest, HTTPResponse
+from request import HTTPRequest, HTTPResponse, ContentType
 from stub_config import StubConfig
 from app_handler import History
 
@@ -45,9 +45,7 @@ def history():
 				HTTPRequest(
 					'PUT',
 					'/path/4',
-					headers={
-						'Content-Type': 'application/json'
-					},
+					headers=ContentType.APPLICATION_JSON,
 					body={
 						"foo": "bar"
 					}
@@ -66,9 +64,7 @@ def history():
 				HTTPRequest(
 					'POST',
 					'/path/5',
-					headers={
-						'Content-Type': 'application/octet-stream'
-					},
+					headers=ContentType.APPLICATION_OCTET_STREAM,
 					body=b'ffeeffeeffee'
 				),
 				HTTPResponse(200)
@@ -77,9 +73,7 @@ def history():
 				HTTPRequest(
 					'POST',
 					'/path/6',
-					headers={
-						'Content-Type': 'text/plain'
-					},
+					headers=ContentType.TEXT_PLAIN,
 					body='The sherried sweetness and some spice carry over from the nose.'
 				),
 				HTTPResponse(200)
@@ -88,9 +82,7 @@ def history():
 				HTTPRequest(
 					'PUT',
 					'/path/eicar',
-					headers={
-						'Content-Type': 'application/octet-stream'
-					},
+					headers=ContentType.APPLICATION_OCTET_STREAM,
 					body=b'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*'
 				),
 				HTTPResponse(200)
@@ -99,9 +91,7 @@ def history():
 				HTTPRequest(
 					'PUT',
 					'/path/xml/1',
-					headers={
-						'Content-Type': 'application/xml'
-					},
+					headers=ContentType.APPLICATION_XML,
 					body='''
 <individual>
 	<name>Liam Campbell</name>

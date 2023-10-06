@@ -1,5 +1,9 @@
 from pytest import fixture
-from app_handler import AppHandler, StubConfig, HTTPRequest
+from request import ContentType, HTTPRequest
+from app_handler import AppHandler, StubConfig
+
+
+_PATH_1823 = '/path/1823'
 
 
 @fixture
@@ -23,7 +27,7 @@ def test_handle_request_put_config_status_204(app_handler: AppHandler):
 	request = HTTPRequest(
 		'PUT',
 		'/config',
-		headers='application/json',
+		headers=ContentType.APPLICATION_JSON,
 		body={
 			"defaults": {
 				"response": {
@@ -154,12 +158,10 @@ def test_handle_request_get_assert_called_once_status_200(stub_config: StubConfi
 		- handle_request() returns 200
 
 	"""
-	path = '/path/1823'
-
 	# Act
 	request = HTTPRequest(
 		'GET',
-		path
+		_PATH_1823
 	)
 	response = app_handler.handle_request(request)
 
@@ -171,7 +173,7 @@ def test_handle_request_get_assert_called_once_status_200(stub_config: StubConfi
 		'/assert-called-once',
 		{
 			'method': ['GET'],
-			'path': [path]
+			'path': [_PATH_1823]
 		}
 	)
 	assert_called_response = app_handler.handle_request(assert_called_request)
@@ -190,11 +192,9 @@ def test_handle_request_get_assert_called_once_status_409(app_handler: AppHandle
 		- status 409 Conflict
 
 	"""
-	path = '/path/1823'
-
 	# Arrange
-	app_handler.handle_request(HTTPRequest('GET', path))
-	app_handler.handle_request(HTTPRequest('GET', path))
+	app_handler.handle_request(HTTPRequest('GET', _PATH_1823))
+	app_handler.handle_request(HTTPRequest('GET', _PATH_1823))
 
 	# Act
 	response = app_handler.handle_request(
@@ -203,7 +203,7 @@ def test_handle_request_get_assert_called_once_status_409(app_handler: AppHandle
 			'/assert-called-once',
 			{
 				'method': ['GET'],
-				'path': [path]
+				'path': [_PATH_1823]
 			}
 		)
 	)
@@ -224,14 +224,10 @@ def test_handle_request_get_assert_called_with_status_200(stub_config: StubConfi
 
 	"""
 	# Arrange
-	path = '/path/1823'
-
 	request = HTTPRequest(
 		'POST',
-		path,
-		headers={
-			'Content-Type': 'text/plain'
-		},
+		_PATH_1823,
+		headers=ContentType.TEXT_PLAIN,
 		body='1823'
 	)
 	app_handler.handle_request(request)
@@ -242,11 +238,9 @@ def test_handle_request_get_assert_called_with_status_200(stub_config: StubConfi
 		'/assert-called-with',
 		{
 			'method': ['POST'],
-			'path': [path]
+			'path': [_PATH_1823]
 		},
-		headers={
-			'Content-Type': 'text/plain'
-		},
+		headers=ContentType.TEXT_PLAIN,
 		body='1823'
 	)
 	assert_called_response = app_handler.handle_request(assert_called_request)
@@ -266,14 +260,10 @@ def test_handle_request_get_assert_called_with_status_409(stub_config: StubConfi
 
 	"""
 	# Arrange
-	path = '/path/1823'
-
 	request = HTTPRequest(
 		'POST',
-		path,
-		headers={
-			'Content-Type': 'text/plain'
-		},
+		_PATH_1823,
+		headers=ContentType.TEXT_PLAIN,
 		body='1823'
 	)
 	app_handler.handle_request(request)
@@ -284,11 +274,9 @@ def test_handle_request_get_assert_called_with_status_409(stub_config: StubConfi
 		'/assert-called-with',
 		{
 			'method': ['POST'],
-			'path': [path]
+			'path': [_PATH_1823]
 		},
-		headers={
-			'Content-Type': 'text/plain'
-		},
+		headers=ContentType.TEXT_PLAIN,
 		body='2023'
 	)
 	assert_called_response = app_handler.handle_request(assert_called_request)
@@ -311,14 +299,10 @@ def test_handle_request_get_assert_called_with_status_400_missing_query_param(
 
 	"""
 	# Arrange
-	path = '/path/1823'
-
 	request = HTTPRequest(
 		'POST',
-		path,
-		headers={
-			'Content-Type': 'text/plain'
-		},
+		_PATH_1823,
+		headers=ContentType.TEXT_PLAIN,
 		body='1823'
 	)
 	app_handler.handle_request(request)
@@ -331,9 +315,7 @@ def test_handle_request_get_assert_called_with_status_400_missing_query_param(
 			'method': ['POST']
 			# path query parameter missing
 		},
-		headers={
-			'Content-Type': 'text/plain'
-		},
+		headers=ContentType.TEXT_PLAIN,
 		body='2023'
 	)
 	assert_called_response = app_handler.handle_request(assert_called_request)
@@ -356,14 +338,10 @@ def test_handle_request_get_assert_called_with_status_400_json_schema_error(
 
 	"""
 	# Arrange
-	path = '/path/1823'
-
 	request = HTTPRequest(
 		'POST',
-		path,
-		headers={
-			'Content-Type': 'application/json'
-		},
+		_PATH_1823,
+		headers=ContentType.APPLICATION_JSON,
 		body={
 			"foo": "bar"
 		}
@@ -376,7 +354,7 @@ def test_handle_request_get_assert_called_with_status_400_json_schema_error(
 		'/assert-called-with',
 		{
 			'method': ['POST'],
-			'path': [path]
+			'path': [_PATH_1823]
 		},
 		headers={
 			'Content-Type': 'application/schema+json'
@@ -402,11 +380,9 @@ def test_handle_request_get_assert_called_once_with_status_200(stub_config: Stub
 
 	"""
 	# Arrange
-	path = '/path/1823'
-
 	request = HTTPRequest(
 		'POST',
-		path,
+		_PATH_1823,
 		headers={
 			'Content-Type': 'text/plain'
 		},
@@ -420,7 +396,7 @@ def test_handle_request_get_assert_called_once_with_status_200(stub_config: Stub
 		'/assert-called-once-with',
 		{
 			'method': ['POST'],
-			'path': [path]
+			'path': [_PATH_1823]
 		},
 		headers={
 			'Content-Type': 'text/plain'
@@ -445,9 +421,8 @@ def test_handle_request_get_call_count_status_200(app_handler: AppHandler):
 
 	"""
 	# Arrange
-	path = '/path/1823'
-	app_handler.handle_request(HTTPRequest('GET', path))
-	app_handler.handle_request(HTTPRequest('GET', path))
+	app_handler.handle_request(HTTPRequest('GET', _PATH_1823))
+	app_handler.handle_request(HTTPRequest('GET', _PATH_1823))
 	app_handler.handle_request(HTTPRequest('GET', '/'))
 
 	# Act
@@ -475,9 +450,8 @@ def test_handle_request_get_call_count_per_endpoint_status_200(app_handler: AppH
 
 	"""
 	# Arrange
-	path = '/path/1823'
-	app_handler.handle_request(HTTPRequest('GET', path))
-	app_handler.handle_request(HTTPRequest('GET', path))
+	app_handler.handle_request(HTTPRequest('GET', _PATH_1823))
+	app_handler.handle_request(HTTPRequest('GET', _PATH_1823))
 	app_handler.handle_request(HTTPRequest('GET', '/'))
 
 	# Act
@@ -487,7 +461,7 @@ def test_handle_request_get_call_count_per_endpoint_status_200(app_handler: AppH
 			'/call-count',
 			query={
 				'method': ['GET'],
-				'path': ['/path/1823']
+				'path': [_PATH_1823]
 			}
 		)
 	)
@@ -565,7 +539,7 @@ def test_handle_request_get_call_args_list_status_200(app_handler: AppHandler):
 	app_handler.handle_request(
 		HTTPRequest(
 			'POST',
-			'/path/1823',
+			_PATH_1823,
 			headers={'Content-Type': 'application/json'},
 			body={
 				"foo": "bar"
