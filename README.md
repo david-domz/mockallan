@@ -58,7 +58,8 @@ For example, if we expect our software under test to perform a `POST /orders/ord
 
 
 ```bash
-$ curl -s -X POST http://localhost:8080/orders/order_e2b9/products --data '{'product_id': 'foo', 'description': 'bar', 'amount': 1}'
+$ curl -s -X POST http://localhost:8080/orders/order_e2b9/products	\
+	--data '{'product_id': 'foo', 'description': 'bar', 'amount': 1}'
 ```
 
 `mockallan` will reply with the factory default response.
@@ -116,7 +117,6 @@ E.g.
 				"headers": {
 					"Content-type": "application/json"
 				},
-				// body can be a JSON object or a string
 				"body": {
 					"status": "200",
 					"message": "This is the configured response for POST /orders/order_e2b9/products"
@@ -154,7 +154,9 @@ Add `Content-Type: application/schema+json` to the assertion request and place t
 
 E.g.
 ```bash
-$ curl -X POST --header 'Content-Type: application/json+schema' http://localhost:8080/assert-called-with?method=POST&path=/orders/order_e2b9/products --data '...JSON schema here...'
+$ curl -X POST --header 'Content-Type: application/json+schema'	\
+	http://localhost:8080/assert-called-with?method=POST&path=/orders/order_e2b9/products	\
+	--data '...JSON schema here...'
 ```
 
 ### XML Schema Validation Assertions
@@ -163,7 +165,9 @@ Add `Content-Type: application/xml` to the assertion request and place the XML s
 
 E.g.
 ```bash
-$ curl -X POST --header 'Content-Type: application/xml' http://localhost:8080/assert-called-with?method=POST&path=/orders/order_e2b9/products --data '...XML schema here...'
+$ curl -X POST --header 'Content-Type: application/xml'	\
+	http://localhost:8080/assert-called-with?method=POST&path=/orders/order_e2b9/products	\
+	--data '...XML schema here...'
 ```
 
 ### Regex Validation Assertions
@@ -172,7 +176,9 @@ Add the custom header `X-Mockallan-Validator: regex` to the assertion request an
 
 E.g.
 ```bash
-$ curl -X POST --header 'X-Mockallan-Validator: regex' http://localhost:8080/assert-called-with?method=POST&path=/orders/order_e2b9/products --data '...regex here...'
+$ curl -X POST --header 'X-Mockallan-Validator: regex'	\
+	http://localhost:8080/assert-called-with?method=POST&path=/orders/order_e2b9/products	\
+	--data '...regex here...'
 ```
 
 <!-- ## Stub Configuration JSON
@@ -221,10 +227,10 @@ The Stub Configuration JSON format configures `mockallan` responses.
 
 The Stub Configuration API allows the test client to configure the mock at runtime.
 
-|Method|Path|Request Body|Status|Response Body|
-|-|-|-|-|-|
-|PUT|/configure|JSON stub configuration|204|-|
-|GET|/configure|-|200|JSON stub configuration|
+|Method|Path|Query Params|Request Body|Status|Response Body|
+|-|-|-|-|-|-|
+|PUT|/configure|-|JSON stub configuration|204|-|
+|GET|/configure|-|-|200|JSON stub configuration|
 
 
 ## Assertion API
