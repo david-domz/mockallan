@@ -61,9 +61,9 @@ def test_handle_request_get_unknown_status_200(stub_config: StubConfig, app_hand
 
 	assert response == stub_config.default_response
 
-	assert len(app_handler.request_registry.request_records) == 1
+	assert len(app_handler.history.call_args_list()) == 1
 
-	request_record = app_handler.request_registry.request_records[0]
+	request_record = app_handler.history.call_args_list()[0]
 	assert request == request_record.request
 	assert response == request_record.response
 

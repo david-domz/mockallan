@@ -31,7 +31,7 @@ class AppHandler():
 
 
 	@property
-	def request_registry(self) -> History:
+	def history(self) -> History:
 
 		return self._history
 

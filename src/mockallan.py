@@ -83,8 +83,8 @@ class MockHTTPServer():
 	"""
 	def __init__(self, server_address, stub_config_json: dict | str | None):
 
-		self._config = StubConfig(stub_config_json)
-		app_handler = AppHandler(self._config)
+		stub_config = StubConfig(stub_config_json)
+		app_handler = AppHandler(stub_config)
 		http_request_handler_class = http_request_handler_class_factory(app_handler)
 		self._http_server = HTTPServer(server_address, http_request_handler_class)
 
