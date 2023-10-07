@@ -26,9 +26,8 @@ def empty_history():
 def history():
 	"""History instance with many requests. """
 
-	history_instance = History()
-	history_instance.append_many(
-		[
+	history_instance = History(
+		requests_responses=[
 			(
 				HTTPRequest('GET', '/path/1'),
 				HTTPResponse(200)
