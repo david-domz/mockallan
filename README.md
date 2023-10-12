@@ -1,6 +1,6 @@
 <!-- # `mockallan` - Lightweight HTTP Server Mock -->
 
-![image](mockallan-light.png)
+![image](mockallan.png)
 
 [![PyPI package version](https://badge.fury.io/py/mockallan.svg)](https://pypi.org/project/mockallan/) [![Supported Python versions](https://img.shields.io/pypi/pyversions/mockallan.svg)](https://pypi.org/project/mockallan/) [![Python package](https://github.com/david-domz/mockallan/actions/workflows/python-package.yml/badge.svg)](https://github.com/david-domz/mockallan/actions/workflows/python-package.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=david-domz_mockallan&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=david-domz_mockallan)
 
@@ -50,16 +50,24 @@ $ python mockallan.py
 Listening on 0.0.0.0:8080
 ```
 
-1) Run your software under test.
+2) Run your software under test.
 
 If you currently don't have any software whose requests you want to test, you can simulate a request performed by software under test.
 
-For example, if we expect our software under test to perform a `POST /orders/order_e2b9/products` we can run the following command.
-
+For example, if we expect our software under test to perform a `POST /orders/order_e2b9/products` we can run the following `curl` command.
 
 ```bash
-$ curl -s -X POST http://localhost:8080/orders/order_e2b9/products	\
-	--data '{'product_id': 'foo', 'description': 'bar', 'amount': 1}'
+cat > product.json << EOF
+{
+	"product_id": "foo",
+	"description": "bar",
+	"amount": 1
+}
+EOF
+```
+
+```bash
+curl -s -X POST http://localhost:8080/orders/order_e2b9/products --data @product.json
 ```
 
 `mockallan` will reply with the factory default response.
@@ -74,7 +82,7 @@ $ curl -s -X POST http://localhost:8080/orders/order_e2b9/products	\
 3) Use the Assertion API to make assertions on the expected request.
 
 ```bash
-$ curl "http://localhost:8080/assert-called-once?method=POST&path=/orders/order_e2b9/products"
+$ curl "http://localhost:8080/assert-called?method=POST&path=/orders/order_e2b9/products"
 ```
 
 If the assertion request returns 200 then everything went fine.
@@ -83,7 +91,7 @@ If the assertion request returns 200 then everything went fine.
 {
 	"status": 200,
 	"type": "assertion-success",
-	"title": "Assertion request GET /assert-called-once succeeded",
+	"title": "Assertion request GET /assert-called succeeded",
 	"detail": "POST /orders/order_e2b9/products called 1 times."
 }
 ```
@@ -94,14 +102,14 @@ If it returns 409 then the assertion failed and the software under test did not 
 {
 	"status": 409,
 	"type": "assertion-error",
-	"title": "Assertion request GET /assert-called-once failed",
-	"detail": "Expected POST /orders/order_e2b9/products to be called once. Called 2 times."
+	"title": "Assertion request GET /assert-called failed",
+	"detail": "Expected POST /orders/order_e2b9/products to be called 1 times. Called 0 times."
 }
 ```
 
 ## Using Configurable Stub Responses
 
-1) Create a Stub Configuration JSON file as follows or use `stub_config.json` in this repository.
+1) Create a Stub Configuration JSON file or use `stub_config.json` in this repository.
 
 E.g.
 ```json
@@ -127,7 +135,7 @@ E.g.
 }
 ```
 
-1) Run `mockallan.py` and provide the JSON file.
+2) Run `mockallan.py` and provide the JSON file.
 
 ```bash
 $ python mockallan.py -c stub_config.json
@@ -138,7 +146,7 @@ $ python mockallan.py -c stub_config.json
 4) Use the Assertion API to make assertions on expected requests.
 
 ```bash
-$ curl -X GET 'http://localhost:8080/assert-called-once?method=POST&path=/orders/order_e2b9/products'
+$ curl -X GET 'http://localhost:8080/assert-called?method=POST&path=/orders/order_e2b9/products'
 ```
 
 If the assertion request returns 200 then everything went fine. If it returns 409 then the assertion failed and the software under test did not behave as expected.
@@ -146,7 +154,7 @@ If the assertion request returns 200 then everything went fine. If it returns 40
 
 ## Using Assertions `with`
 
-The following validation can be used when performing assertion requests with `POST /assert-called-with` or `POST /assert-called-once-with`. The request body corresponds to the JSON object, the JSON schema, XML schema, or regular expression to match as shown below.
+The following validations can be used when performing assertion requests with `POST /assert-called-with` or `POST /assert-called-once-with`. The request body corresponds to the `text/plain` body, JSON message, JSON schema, XML schema, or regular expression to match as shown below.
 
 ### JSON Schema Validation Assertions
 
@@ -253,6 +261,17 @@ The Assertion API allows for the validation of expected requests.
 Stub Configuration API and Assertion API naming are inspired by class `Mock` from the standard python package `unittest.mock`.
 
 
-## Feedback
+## Contributing
 
-I value your feedback! If you've tried `mockallan` and have suggestions, bug reports, or any other feedback, please let me know. You can reach out to me via [email](mailto:david.7b8@gmail.com). Thank you!
+We welcome contributions to improve this project. Whether you want to report a bug, suggest an enhancement, or submit a pull request, your help is highly valuable.
+
+If you encounter a bug, experience unexpected behavior, or have ideas for improving this project, please open an issue on our [issue tracker](https://github.com/david-domz/mockallan/issues).
+
+If you're interested in contributing to the codebase, follow these steps:
+
+- Fork the repository and create your branch from the main branch.
+- Make your changes and ensure they adhere to our coding standards.
+- Thoroughly test your changes.
+- Create a pull request, describing the changes you've made and their purpose.
+
+Thank you!
