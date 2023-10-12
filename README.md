@@ -265,7 +265,7 @@ Stub Configuration API and Assertion API naming are inspired by class `Mock` fro
 
 We welcome contributions to improve this project. Whether you want to report a bug, suggest an enhancement, or submit a pull request, your help is highly valuable.
 
-If you encounter a bug, experience unexpected behavior, or have ideas for improving this project, please open an issue on our [issue tracker](https://github.com/david-domz/mockallan/issues).
+If you encounter a bug, experience unexpected behavior, or have ideas for improving this project, please [open an issue](https://github.com/david-domz/mockallan/issues).
 
 If you're interested in contributing to the codebase, follow these steps:
 
@@ -275,3 +275,7 @@ If you're interested in contributing to the codebase, follow these steps:
 - Create a pull request, describing the changes you've made and their purpose.
 
 Thank you!
+
+## License
+
+This project is licensed under the terms of the MIT license.
