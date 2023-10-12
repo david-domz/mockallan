@@ -2,12 +2,12 @@ from argparse import ArgumentParser
 import json
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import urllib.parse
-from request import HTTPRequest, HTTPResponse
+from request import HTTPRequest, HTTPResponse, ContentType
 from stub_config import StubConfig
 from app_handler import AppHandler
 
 
-VERSION = '0.0.5'
+VERSION = '0.0.6'
 
 __all__ = ['MockHTTPServer']
 
@@ -34,29 +34,26 @@ def http_request_handler_class_factory(app_handler: AppHandler):
 
 		def do_PUT(self):
 
-			parse_result = urllib.parse.urlparse(self.path)
-			query = urllib.parse.parse_qs(parse_result.query)
-
-			content_length = int(self.headers['Content-Length'])
-			body = self.rfile.read(content_length)
-			body_str = body.decode('utf-8')
-			request = HTTPRequest('PUT', parse_result.path, query, self.headers, body_str)
-
-			response = self.app_handler.handle_request(request)
-
-			self._write_response(response)
+			self._do_request_with_body('PUT')
 
 		def do_POST(self):
 
+			self._do_request_with_body('POST')
+
+		def _do_request_with_body(self, method: str):
+
 			parse_result = urllib.parse.urlparse(self.path)
 			query = urllib.parse.parse_qs(parse_result.query)
 
-			content_length = int(self.headers['Content-Length'])
-			body = self.rfile.read(content_length)
-			body_str = body.decode('utf-8')
-			request = HTTPRequest('POST', parse_result.path, query, self.headers, body_str)
+			content_length = self.headers['Content-Length']
+			if content_length:
+				body = self.rfile.read(int(content_length))
+				body_str = body.decode('utf-8')
+				request = HTTPRequest(method, parse_result.path, query, self.headers, body_str)
 
-			response = self.app_handler.handle_request(request)
+				response = self.app_handler.handle_request(request)
+			else:
+				response = self._create_bad_request_response(f'{method} without body')
 
 			self._write_response(response)
 
@@ -71,6 +68,19 @@ def http_request_handler_class_factory(app_handler: AppHandler):
 				response.body = json.dumps(response.body)
 
 			self.wfile.write(response.body.encode('utf-8'))
+
+		@staticmethod
+		def _create_bad_request_response(message: str) -> HTTPResponse:
+
+			return HTTPResponse(
+				400,
+				ContentType.APPLICATION_JSON_ERROR,
+				{
+					"status": 400,
+					"type": "bad-request",
+					"message": message
+				}
+			)
 
 	return HTTPRequestHandler
 
