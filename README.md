@@ -37,7 +37,7 @@
 `mockallan` is available on [PyPI](https://pypi.org/project/mockallan/). Install it using pip.
 
 ```bash
-$ pip install mockallan
+pip install mockallan
 ```
 
 ## Getting Started
@@ -46,7 +46,7 @@ $ pip install mockallan
 1) Run `mockallan.py`
 
 ```bash
-$ python mockallan.py
+python mockallan.py
 Listening on 0.0.0.0:8080
 ```
 
@@ -82,7 +82,7 @@ curl -s -X POST http://localhost:8080/orders/order_e2b9/products --data @product
 3) Use the Assertion API to make assertions on the expected request.
 
 ```bash
-$ curl "http://localhost:8080/assert-called?method=POST&path=/orders/order_e2b9/products"
+curl "http://localhost:8080/assert-called?method=POST&path=/orders/order_e2b9/products"
 ```
 
 If the assertion request returns 200 then everything went fine.
@@ -138,7 +138,7 @@ E.g.
 2) Run `mockallan.py` and provide the JSON file.
 
 ```bash
-$ python mockallan.py -c stub_config.json
+python mockallan.py -c stub_config.json
 ```
 
 3) Run the software under test. The mock will reply with the configured response for `POST /orders/order_e2b9/products`.
@@ -146,7 +146,7 @@ $ python mockallan.py -c stub_config.json
 4) Use the Assertion API to make assertions on expected requests.
 
 ```bash
-$ curl -X GET 'http://localhost:8080/assert-called?method=POST&path=/orders/order_e2b9/products'
+curl -X GET 'http://localhost:8080/assert-called?method=POST&path=/orders/order_e2b9/products'
 ```
 
 If the assertion request returns 200 then everything went fine. If it returns 409 then the assertion failed and the software under test did not behave as expected.
@@ -162,7 +162,7 @@ Add `Content-Type: application/schema+json` to the assertion request and place t
 
 E.g.
 ```bash
-$ curl -X POST --header 'Content-Type: application/json+schema'	\
+curl -X POST --header 'Content-Type: application/json+schema'	\
 	http://localhost:8080/assert-called-with?method=POST&path=/orders/order_e2b9/products	\
 	--data '...JSON schema here...'
 ```
@@ -173,7 +173,7 @@ Add `Content-Type: application/xml` to the assertion request and place the XML s
 
 E.g.
 ```bash
-$ curl -X POST --header 'Content-Type: application/xml'	\
+curl -X POST --header 'Content-Type: application/xml'	\
 	http://localhost:8080/assert-called-with?method=POST&path=/orders/order_e2b9/products	\
 	--data '...XML schema here...'
 ```
@@ -184,7 +184,7 @@ Add the custom header `X-Mockallan-Validator: regex` to the assertion request an
 
 E.g.
 ```bash
-$ curl -X POST --header 'X-Mockallan-Validator: regex'	\
+curl -X POST --header 'X-Mockallan-Validator: regex'	\
 	http://localhost:8080/assert-called-with?method=POST&path=/orders/order_e2b9/products	\
 	--data '...regex here...'
 ```
@@ -279,3 +279,8 @@ Thank you!
 ## License
 
 This project is licensed under the terms of the MIT license.
+
+## Related Projects
+
+- [mockallan-docker](https://github.com/david-domz/mockallan-docker) - Containerized lightweight HTTP server mock.
+- [mockallan-python-client](https://github.com/david-domz/mockallan-python-client) - Mockallan python client class.
