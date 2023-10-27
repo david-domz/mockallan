@@ -8,7 +8,7 @@ from stub_config import StubConfig
 from app_handler import AppHandler
 
 
-VERSION = '0.0.6'
+VERSION = '0.0.7'
 
 __all__ = ['MockHTTPServer']
 
