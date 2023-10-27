@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+import logging
 import json
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import urllib.parse
@@ -47,15 +48,21 @@ def http_request_handler_class_factory(app_handler: AppHandler):
 
 			content_length = self.headers['Content-Length']
 			if content_length:
-				body = self.rfile.read(int(content_length))
-				body_str = body.decode('utf-8')
-				request = HTTPRequest(method, parse_result.path, query, self.headers, body_str)
+				try:
+					body = self.rfile.read(int(content_length))
+				except ConnectionError as e:
+					logging.warning('`%s` was raised while reading the socket: %s', e.__class__.__name__, e)
+					response = None
+				else:
+					body_str = body.decode('utf-8')
+					request = HTTPRequest(method, parse_result.path, query, self.headers, body_str)
 
-				response = self.app_handler.handle_request(request)
+					response = self.app_handler.handle_request(request)
 			else:
 				response = self._create_bad_request_response(f'{method} without body')
 
-			self._write_response(response)
+			if response:
+				self._write_response(response)
 
 		def _write_response(self, response: HTTPResponse):
 
@@ -67,7 +74,10 @@ def http_request_handler_class_factory(app_handler: AppHandler):
 			if isinstance(response.body, dict):
 				response.body = json.dumps(response.body)
 
-			self.wfile.write(response.body.encode('utf-8'))
+			try:
+				self.wfile.write(response.body.encode('utf-8'))
+			except ConnectionError as e:
+				logging.warning('`%s` was raised while writting the socket: %s', e.__class__.__name__, e)
 
 		@staticmethod
 		def _create_bad_request_response(message: str) -> HTTPResponse:
@@ -86,7 +96,7 @@ def http_request_handler_class_factory(app_handler: AppHandler):
 
 
 class MockHTTPServer():
-	"""Configurable HTTP server mock.
+	"""Lightweight HTTP server mock.
 
 	Configurable at initialization time from a JSON file or python dict. Configurable at run time via REST API.
 
