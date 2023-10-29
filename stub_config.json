@@ -7,45 +7,26 @@
 			},
 			"body": {
 				"status": 200,
-				"message": "This is the default response configured in stub_config.json"
+				"message": "This is mockallan's configured default response"
 			}
 		}
 	},
 	"endpoints": [
 		{
 			"request": {
-				"method": "GET",
-				"path": "/mockallan-reserve"
+				"method": "POST",
+				"path": "/orders/order_e2b9/products"
 			},
 			"response": {
 				"code": 200,
 				"headers": {
 					"Content-Type": "application/json"
 				},
-				"body": "{\"message\": \"This is the resource at /mockallan-reserve\"}"
-			}
-		},
-		{
-			"request": {
-				"method": "GET",
-				"path": "/path-2"
-			},
-			"response": [
-				{
-					"code": 200,
-					"headers": {
-						"Content-type": "application/json"
-					},
-					"body": "{\"message\": \"This is the first response for GET /path-2\"}"
-				},
-				{
-					"code": 200,
-					"headers": {
-						"Content-type": "application/json"
-					},
-					"body": "{\"message\": \"This is the second response for GET /path-2\"}"
+				"body": {
+					"status": 200,
+					"message": "This is mockallan's configured response for POST /orders/order_e2b9/products"
 				}
-			]
+			}
 		},
 		{
 			"request": {

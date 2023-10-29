@@ -11,7 +11,7 @@ def test_load_json(stub_config: StubConfig):
 		},
 		{
 			"status": "200",
-			"message": "This is the configured response in stub_config.json",
+			"message": "This is mockallan's configured default response",
 		}
 	)
 
@@ -45,7 +45,7 @@ def test_lookup_default_response(stub_config: StubConfig):
 	assert response.headers['Content-Type'] == 'application/json'
 	assert response.body == {
 		"status": 200,
-		"message": "This is the default response configured in stub_config.json"
+		"message": "This is mockallan's configured default response"
 	}
 
 
