@@ -11,9 +11,9 @@
 
 - Command-line interface for CI and testing environments.
 
-- The Stub Configuration API allows to configure default and per-endpoint responses.
+- Configure default and per-endpoint responses.
 
-- The Assertion API enables the assertion of expected requests performed by the software under test based on the endpoint and the request body.
+- Assert expected requests performed by the software under test based on the endpoint and the request body.
 
 - Match the request body in assertions based on
   - text/plain message matching
@@ -22,11 +22,11 @@
   - XML schema validation
   - Regular expression matching
 
-- Request history enables robust assertion capabilities and diagnostics.
+- Request history enables robust assertion capabilities.
 
-- Concise codebase of under 1000 lines, focusing on simplicity and making the best use of resources.
+- Concise codebase focusing on simplicity.
 
-- API naming adheres to the `Mock` class from the Python `unittest.mock` standard library.
+- API naming inspired by the `Mock` class from the Python `unittest.mock` standard library.
 
 ## Requirements
 

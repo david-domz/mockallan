@@ -2,12 +2,22 @@ import json
 from request import HTTPRequest, HTTPResponse
 
 
+class MissingProperty(Exception):
+	def __init__(self, property: str):
+		super().__init__(f'{property}: missing required property')
+
+
+class UnexpectedProperty(Exception):
+	def __init__(self, property: str):
+		super().__init__(f'{property}: unexpected property')
+
+
 class StubConfig():
 	"""Stub Configuration. Holds default and per-endpoint responses.
 
 	Attributes:
-		_default_response (HTTPResponse)
-		_endpoints
+		_default_response (HTTPResponse):			Default response.
+		_endpoints (dict[tuple[str, str], HTTPResponse]):	Per-endpoint response mapping.
 
 	"""
 	_FACTORY_DEFAULT_RESPONSE = HTTPResponse(
@@ -45,16 +55,30 @@ class StubConfig():
 
 
 	def load_json(self, config_json: dict):
+		"""
 
-		defaults_json = config_json['defaults']
-		default_response_json = defaults_json['response']
+		Raises:
+			MissingProperty
+			TypeError
+
+		"""
+		try:
+			defaults_json = config_json['defaults']
+			default_response_json = defaults_json['response']
+		except KeyError as e:
+			raise MissingProperty(e) from e
+
 		self._default_response = HTTPResponse(**default_response_json)
 
 		self._endpoints = {}
 
-		endpoints_json = config_json['endpoints']
+		endpoints_json = config_json.get('endpoints', [])
 		for endpoint_json in endpoints_json:
-			request_json = endpoint_json['request']
+			try:
+				request_json = endpoint_json['request']
+			except KeyError as e:
+				raise MissingProperty(e) from e
+
 			request = HTTPRequest(**request_json)
 			endpoint = (request.method.upper(), request.path)
 
@@ -64,7 +88,11 @@ class StubConfig():
 	@staticmethod
 	def _load_response_json(endpoint_json: dict) -> HTTPResponse | list[HTTPResponse]:
 
-		response_json = endpoint_json['response']
+		try:
+			response_json = endpoint_json['response']
+		except KeyError as e:
+			raise MissingProperty(e) from e
+
 		if isinstance(response_json, dict):
 			response = HTTPResponse(**response_json)
 		elif isinstance(response_json, list):

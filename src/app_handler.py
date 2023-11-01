@@ -1,7 +1,11 @@
 import json
 import jsonschema
 from request import ContentType, HTTPRequest, HTTPResponse
-from stub_config import StubConfig
+from stub_config import (
+	StubConfig,
+	MissingProperty,
+	UnexpectedProperty
+)
 from history import History, RequestRecord
 
 
@@ -83,8 +87,44 @@ class AppHandler():
 	def _put_config(self, request: HTTPRequest) -> HTTPResponse:
 
 		if isinstance(request.body, str):
-			request.body = json.loads(request.body)
-		self._config.load_json(request.body)
+			try:
+				request.body = json.loads(request.body)
+			except json.JSONDecodeError as e:
+				return HTTPResponse(
+					400,
+					ContentType.APPLICATION_JSON_ERROR,
+					{
+						"status": 400,
+						"type": "json-decode-error",
+						"title": "Error decoding JSON object",
+						"detail": f"{e.__class__.__name__}: {e}."
+					}
+				)
+
+		try:
+			self._config.load_json(request.body)
+		except MissingProperty as e:
+			return HTTPResponse(
+				400,
+				ContentType.APPLICATION_JSON_ERROR,
+				{
+					"status": 400,
+					"type": "missing-property-error",
+					"title": "Missing required property",
+					"detail": f"{e}."
+				}
+			)
+		except TypeError as e:
+			return HTTPResponse(
+				400,
+				ContentType.APPLICATION_JSON_ERROR,
+				{
+					"status": 400,
+					"type": "unexpected-property-error",
+					"title": "Unexpected property",
+					"detail": f"{e.__class__.__name__}: {e}."
+				}
+			)
 
 		return HTTPResponse(204)
 
@@ -95,16 +135,8 @@ class AppHandler():
 			method_called = request.query['method'][0]
 			path_called = request.query['path'][0]
 			endpoint_called = (method_called, path_called)
-		except KeyError:
-			response = HTTPResponse(
-				400,
-				headers=ContentType.APPLICATION_JSON_ERROR,
-				body={
-					"status": 400,
-					"type": "missing-query-param",
-					"message": "Bad request. Query parameter {e} not found."
-				}
-			)
+		except KeyError as e:
+			response = self._create_missing_query_param_response(e)
 		else:
 			call_count = self._history.call_count(endpoint_called)
 
@@ -118,16 +150,19 @@ class AppHandler():
 
 	def _assert_called_once(self, request: HTTPRequest) -> HTTPResponse:	# pylint: disable=unused-argument
 
-		method_called = request.query['method'][0]
-		path_called = request.query['path'][0]
-		endpoint_called = (method_called, path_called)
-
-		call_count = self._history.call_count(endpoint_called)
-
-		if call_count == 1:
-			response = self._create_assertion_success_response(request, endpoint_called, call_count)
+		try:
+			method_called = request.query['method'][0]
+			path_called = request.query['path'][0]
+			endpoint_called = (method_called, path_called)
+		except KeyError as e:
+			response = self._create_missing_query_param_response(e)
 		else:
-			response = self._create_assertion_error_response(request, endpoint_called, 1, call_count)
+			call_count = self._history.call_count(endpoint_called)
+
+			if call_count == 1:
+				response = self._create_assertion_success_response(request, endpoint_called, call_count)
+			else:
+				response = self._create_assertion_error_response(request, endpoint_called, 1, call_count)
 
 		return response
 
@@ -139,7 +174,7 @@ class AppHandler():
 			path_called = request.query['path'][0]
 			endpoint_called = (method_called, path_called)
 		except KeyError as e:
-			response = self._create_query_param_not_found_error_response(e)
+			response = self._create_missing_query_param_response(e)
 		else:
 			try:
 				self._history.assert_called_with(endpoint_called, request)
@@ -158,7 +193,7 @@ class AppHandler():
 			path_called = request.query['path'][0]
 			endpoint_called = (method_called, path_called)
 		except KeyError as e:
-			response = self._create_query_param_not_found_error_response(e)
+			response = self._create_missing_query_param_response(e)
 		else:
 			try:
 				self._history.assert_called_once_with(endpoint_called, request)
@@ -187,7 +222,7 @@ class AppHandler():
 			body = {
 				"status": status,
 				"type": "assertion-error",
-				"title": "No request was performed by the software under test (SUT)",
+				"title": "No request was performed by the software under test",
 			}
 		else:
 			status = 200
@@ -244,10 +279,10 @@ class AppHandler():
 				count = self._history.call_count(endpoint_called)
 				response = self._create_call_count_response(count, endpoint_called)
 			else:
-				response = self._create_query_param_not_found_error_response(KeyError('path'))
+				response = self._create_missing_query_param_response(KeyError('path'))
 		else:
 			if path:
-				response = self._create_query_param_not_found_error_response(KeyError('method'))
+				response = self._create_missing_query_param_response(KeyError('method'))
 			else:
 				# Total call count
 				count = self._history.call_count()
@@ -328,7 +363,7 @@ class AppHandler():
 
 
 	@staticmethod
-	def _create_query_param_not_found_error_response(key_error: KeyError) -> HTTPResponse:
+	def _create_missing_query_param_response(key_error: KeyError) -> HTTPResponse:
 
 		return HTTPResponse(
 			400,
@@ -336,6 +371,7 @@ class AppHandler():
 			body={
 				"status": 400,
 				"type": "missing-query-param",
-				"message": f"Bad request. Query parameter {key_error} not found."
+				"title": "Missing query parameter",
+				"detail": f"Query parameter `{key_error}` not found."
 			}
 		)

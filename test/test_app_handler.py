@@ -76,7 +76,7 @@ def test_handle_request_get_assert_called_status_200(stub_config: StubConfig, ap
 	When:
 		- GET /assert-called?method=GET&path=/path/1824
 	Then:
-		- handle_request() returns status 200, type assertion-success
+		- handle_request() returns 200, type assertion-success
 
 	"""
 	# Arrange
@@ -93,11 +93,11 @@ def test_handle_request_get_assert_called_status_200(stub_config: StubConfig, ap
 			'path': [path]
 		}
 	)
-	assert_called_response = app_handler.handle_request(assert_called_request)
+	response = app_handler.handle_request(assert_called_request)
 
 	# Assert
-	assert assert_called_response.code == 200
-	assert assert_called_response.body['type'] == 'assertion-success'
+	assert response.code == 200
+	assert response.body['type'] == 'assertion-success'
 
 
 def test_handle_request_get_assert_called_status_409(stub_config: StubConfig, app_handler: AppHandler):
@@ -108,7 +108,7 @@ def test_handle_request_get_assert_called_status_409(stub_config: StubConfig, ap
 	When:
 		- GET /assert-called?method=GET&path=/path/1824
 	Then:
-		- handle_request() returns status 409, type assertion-error
+		- handle_request() returns 409, type assertion-error
 
 	"""
 	assert_called_request = HTTPRequest(
@@ -119,13 +119,13 @@ def test_handle_request_get_assert_called_status_409(stub_config: StubConfig, ap
 			'path': ['/path/1824']
 		}
 	)
-	assert_called_response = app_handler.handle_request(assert_called_request)
+	response = app_handler.handle_request(assert_called_request)
 
-	assert assert_called_response.code == 409
-	assert assert_called_response.body['type'] == 'assertion-error'
+	assert response.code == 409
+	assert response.body['type'] == 'assertion-error'
 
 
-def test_handle_request_get_assert_called_status_400(stub_config: StubConfig, app_handler: AppHandler):
+def test_handle_request_get_assert_called_status_400_missing_query_param(stub_config: StubConfig, app_handler: AppHandler):
 	"""
 
 	When:
@@ -142,9 +142,10 @@ def test_handle_request_get_assert_called_status_400(stub_config: StubConfig, ap
 			'foo': 'bar'
 		}
 	)
-	assert_called_response = app_handler.handle_request(assert_called_request)
+	response = app_handler.handle_request(assert_called_request)
 
-	assert assert_called_response.code == 400
+	assert response.code == 400
+	assert response.body['type'] == 'missing-query-param'
 
 
 def test_handle_request_get_assert_called_once_status_200(stub_config: StubConfig, app_handler: AppHandler):
@@ -155,19 +156,17 @@ def test_handle_request_get_assert_called_once_status_200(stub_config: StubConfi
 	When:
 		- GET /assert-called-once?method=GET&path=/path/1823
 	Then:
-		- handle_request() returns 200
+		- handle_request() returns 200 assertion-success
 
 	"""
-	# Act
+	# Arrange
 	request = HTTPRequest(
 		'GET',
 		_PATH_1823
 	)
-	response = app_handler.handle_request(request)
+	app_handler.handle_request(request)
 
-	# Assert
-	assert response == stub_config.default_response
-
+	# Act
 	assert_called_request = HTTPRequest(
 		'GET',
 		'/assert-called-once',
@@ -176,9 +175,10 @@ def test_handle_request_get_assert_called_once_status_200(stub_config: StubConfi
 			'path': [_PATH_1823]
 		}
 	)
-	assert_called_response = app_handler.handle_request(assert_called_request)
+	response = app_handler.handle_request(assert_called_request)
 
-	assert assert_called_response.code == 200
+	assert response.code == 200
+	assert response.body['type'] == 'assertion-success'
 
 
 def test_handle_request_get_assert_called_once_status_409(app_handler: AppHandler):
@@ -189,7 +189,7 @@ def test_handle_request_get_assert_called_once_status_409(app_handler: AppHandle
 	When:
 		- GET /assert-called-once?method=GET&path=/path/1823
 	Then:
-		- status 409 Conflict
+		- handle_request() returns 409 assertion-error
 
 	"""
 	# Arrange
@@ -210,9 +210,41 @@ def test_handle_request_get_assert_called_once_status_409(app_handler: AppHandle
 
 	# Assert
 	assert response.code == 409
+	assert response.body['type'] == 'assertion-error'
 
 
-def test_handle_request_get_assert_called_with_status_200(stub_config: StubConfig, app_handler: AppHandler):
+def test_handle_request_get_assert_called_once_status_400_missing_query_param(app_handler: AppHandler):
+	"""
+
+	Given:
+		- 1 requests GET /path/1823 was performed
+	When:
+		- GET /assert-called-once?method=GET
+	Then:
+		- handle_request() returns 400 missing-query-param
+
+	"""
+	# Arrange
+	app_handler.handle_request(HTTPRequest('GET', _PATH_1823))
+
+	# Act
+	response = app_handler.handle_request(
+		HTTPRequest(
+			'GET',
+			'/assert-called-once',
+			{
+				'method': ['GET']
+				# Missing query param `path`
+			}
+		)
+	)
+
+	# Assert
+	assert response.code == 400
+	assert response.body['type'] == 'missing-query-param'
+
+
+def test_handle_request_get_assert_called_with_status_200(app_handler: AppHandler):
 	"""
 
 	Given:
@@ -220,7 +252,7 @@ def test_handle_request_get_assert_called_with_status_200(stub_config: StubConfi
 	When:
 		- GET /assert-called-with?method=POST&path=/path/1823 and body 1823
 	Then:
-		- handle_request() returns 200
+		- handle_request() returns 200 assertion-success
 
 	"""
 	# Arrange
@@ -243,12 +275,14 @@ def test_handle_request_get_assert_called_with_status_200(stub_config: StubConfi
 		headers=ContentType.TEXT_PLAIN,
 		body='1823'
 	)
-	assert_called_response = app_handler.handle_request(assert_called_request)
+	response = app_handler.handle_request(assert_called_request)
 
-	assert assert_called_response.code == 200
+	# Assert
+	assert response.code == 200
+	assert response.body['type'] == 'assertion-success'
 
 
-def test_handle_request_get_assert_called_with_status_409(stub_config: StubConfig, app_handler: AppHandler):
+def test_handle_request_get_assert_called_with_status_409(app_handler: AppHandler):
 	"""
 
 	Given:
@@ -256,7 +290,7 @@ def test_handle_request_get_assert_called_with_status_409(stub_config: StubConfi
 	When:
 		- GET /assert-called-with?method=POST&path=/path/1823 and body 2023
 	Then:
-		- handle_request() returns 409
+		- handle_request() returns 409 assertion-error
 
 	"""
 	# Arrange
@@ -285,9 +319,7 @@ def test_handle_request_get_assert_called_with_status_409(stub_config: StubConfi
 	assert assert_called_response.body['type'] == 'assertion-error'
 
 
-def test_handle_request_get_assert_called_with_status_400_missing_query_param(
-		stub_config: StubConfig,
-		app_handler: AppHandler):
+def test_handle_request_get_assert_called_with_status_400_missing_query_param(app_handler: AppHandler):
 	"""
 
 	Given:
@@ -318,15 +350,13 @@ def test_handle_request_get_assert_called_with_status_400_missing_query_param(
 		headers=ContentType.TEXT_PLAIN,
 		body='2023'
 	)
-	assert_called_response = app_handler.handle_request(assert_called_request)
+	response = app_handler.handle_request(assert_called_request)
 
-	assert assert_called_response.code == 400
-	assert assert_called_response.body['type'] == 'missing-query-param'
+	assert response.code == 400
+	assert response.body['type'] == 'missing-query-param'
 
 
-def test_handle_request_get_assert_called_with_status_400_json_schema_error(
-		stub_config: StubConfig,
-		app_handler: AppHandler):
+def test_handle_request_get_assert_called_with_status_400_json_schema_error(app_handler: AppHandler):
 	"""
 
 	Given:
@@ -361,14 +391,14 @@ def test_handle_request_get_assert_called_with_status_400_json_schema_error(
 		},
 		body='Bad JSON schema'
 	)
-	assert_called_response = app_handler.handle_request(assert_called_request)
+	response = app_handler.handle_request(assert_called_request)
 
-	assert assert_called_response.code == 400
-	assert assert_called_response.headers['Content-Type'] == 'application/json+error'
-	assert assert_called_response.body['type'] == 'json-schema-error'
+	assert response.code == 400
+	assert response.headers['Content-Type'] == 'application/json+error'
+	assert response.body['type'] == 'json-schema-error'
 
 
-def test_handle_request_get_assert_called_once_with_status_200(stub_config: StubConfig, app_handler: AppHandler):
+def test_handle_request_get_assert_called_once_with_status_200(app_handler: AppHandler):
 	"""
 
 	Given:
@@ -406,6 +436,43 @@ def test_handle_request_get_assert_called_once_with_status_200(stub_config: Stub
 	assert_called_response = app_handler.handle_request(assert_called_request)
 
 	assert assert_called_response.code == 200
+
+
+def test_handle_request_get_assert_called_once_with_status_409(app_handler: AppHandler):
+	"""
+
+	Given:
+		- POST /path/1823 with body 1823 has been called twice
+	When:
+		- GET /assert-called-once-with?method=POST&path=/path/1823 and body 2023
+	Then:
+		- handle_request() returns 409 assertion-error
+
+	"""
+	# Arrange
+	request = HTTPRequest(
+		'POST',
+		_PATH_1823,
+		headers=ContentType.TEXT_PLAIN,
+		body='1823'
+	)
+	app_handler.handle_request(request)
+
+	# Act
+	assert_called_request = HTTPRequest(
+		'POST',
+		'/assert-called-once-with',
+		{
+			'method': ['POST'],
+			'path': [_PATH_1823]
+		},
+		headers=ContentType.TEXT_PLAIN,
+		body='2023'
+	)
+	assert_called_response = app_handler.handle_request(assert_called_request)
+
+	assert assert_called_response.code == 409
+	assert assert_called_response.body['type'] == 'assertion-error'
 
 
 def test_handle_request_get_call_count_status_200(app_handler: AppHandler):

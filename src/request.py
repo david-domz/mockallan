@@ -28,3 +28,7 @@ class HTTPResponse:
 	code: int
 	headers: dict = field(default_factory=dict)
 	body: dict | str | bytes = ''
+
+	def __post_init__(self):
+		if not isinstance(self.code, int):
+			raise TypeError(f"'code' must be {int} but it is actually {type(self.code)}")

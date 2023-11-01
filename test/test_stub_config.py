@@ -1,8 +1,75 @@
+import pytest
 import json
-from stub_config import StubConfig, HTTPRequest, HTTPResponse
+from stub_config import StubConfig, MissingProperty, HTTPRequest, HTTPResponse
 
 
-def test_load_json(stub_config: StubConfig):
+def test_load_json_property_not_found_defaults(factory_stub_config: StubConfig):
+
+	with pytest.raises(MissingProperty):
+		factory_stub_config.load_json(
+			{
+			}
+		)
+
+
+def test_load_json_property_not_found_request(factory_stub_config: StubConfig):
+
+	with pytest.raises(MissingProperty):
+		factory_stub_config.load_json(
+			{
+				"endpoints": [
+					{
+					}
+				]
+			}
+		)
+
+
+def test_load_json_type_error_response(factory_stub_config: StubConfig):
+
+	with pytest.raises(TypeError):
+		factory_stub_config.load_json(
+			{
+				"defaults": {
+					"response": {
+						"code": 200,
+						"headers": {},
+						"body": {},
+						"invalid": "invalid"
+					}
+				},
+				"endpoints": [
+				]
+			}
+		)
+
+
+def test_load_json_type_error_request(factory_stub_config: StubConfig):
+
+	with pytest.raises(TypeError):
+		factory_stub_config.load_json(
+			{
+				"defaults": {
+					"response": {
+						"code": 200,
+						"headers": {},
+						"body": {},
+					}
+				},
+				"endpoints": [
+					{
+						"request": {
+							"method": "GET",
+							"path": "/",
+							"invalid": "invalid"
+						}
+					}
+				]
+			}
+		)
+
+
+def test_default_response(stub_config: StubConfig):
 
 	assert stub_config.default_response, HTTPResponse(
 		200,
