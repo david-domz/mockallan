@@ -2,33 +2,33 @@ import pytest
 from app_handler import HTTPRequest, History
 
 
-def test_call_count_empty_history(empty_history: History):
+def test_request_count_empty_history(empty_history: History):
 
-	assert empty_history.call_count(('GET', '/path/1')) == 0
-
-
-def test_call_count(history: History):
-
-	assert history.call_count(('GET', '/path/1')) == 1
-	assert history.call_count(('POST', '/path/2')) == 3
-	assert history.call_count(('GET', '/path/3')) == 1
-	assert history.call_count(('PUT', '/path/4')) == 1
+	assert empty_history.request_count(('GET', '/path/1')) == 0
 
 
-def test_call_count_none_endpoint(history: History):
+def test_request_count(history: History):
 
-	assert history.call_count() == 10
+	assert history.request_count(('GET', '/path/1')) == 1
+	assert history.request_count(('POST', '/path/2')) == 3
+	assert history.request_count(('GET', '/path/3')) == 1
+	assert history.request_count(('PUT', '/path/4')) == 1
 
 
-def test_call_args_empty_history(empty_history: History):
+def test_request_count_none_endpoint(history: History):
+
+	assert history.request_count() == 10
+
+
+def test_request_body_empty_history(empty_history: History):
 
 	with pytest.raises(AssertionError):
-		empty_history.call_args()
+		empty_history.request_body()
 
 
-def test_call_args(history: History):
+def test_request_body(history: History):
 
-	content_type, body = history.call_args()
+	content_type, body = history.request_body()
 
 	assert content_type == 'application/xml'
 	assert body == '''
@@ -42,9 +42,9 @@ def test_call_args(history: History):
 
 
 
-def test_call_args_list(history: History):
+def test_request_body_list(history: History):
 
-	request_records = history.call_args_list()
+	request_records = history.request_body_list()
 
 	assert len(request_records) == 10
 	assert request_records[0].request.path == '/path/1'

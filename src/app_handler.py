@@ -137,12 +137,12 @@ class AppHandler():
 		except KeyError as e:
 			response = self._create_missing_query_param_response(e)
 		else:
-			call_count = self._history.call_count(endpoint_called)
+			request_count = self._history.request_count(endpoint_called)
 
-			if call_count > 0:
-				response = self._create_assertion_success_response(request, endpoint_called, call_count)
+			if request_count > 0:
+				response = self._create_assertion_success_response(request, endpoint_called, request_count)
 			else:
-				response = self._create_assertion_error_response(request, endpoint_called, 1, call_count)
+				response = self._create_assertion_error_response(request, endpoint_called, 1, request_count)
 
 		return response
 
@@ -156,12 +156,12 @@ class AppHandler():
 		except KeyError as e:
 			response = self._create_missing_query_param_response(e)
 		else:
-			call_count = self._history.call_count(endpoint_called)
+			request_count = self._history.request_count(endpoint_called)
 
-			if call_count == 1:
-				response = self._create_assertion_success_response(request, endpoint_called, call_count)
+			if request_count == 1:
+				response = self._create_assertion_success_response(request, endpoint_called, request_count)
 			else:
-				response = self._create_assertion_error_response(request, endpoint_called, 1, call_count)
+				response = self._create_assertion_error_response(request, endpoint_called, 1, request_count)
 
 		return response
 
@@ -214,7 +214,7 @@ class AppHandler():
 
 		"""
 		try:
-			content_type, body = self._history.call_args()
+			content_type, body = self._history.request_body()
 		except AssertionError:
 			status_code = 409
 			headers = ContentType.APPLICATION_JSON_ERROR
@@ -254,7 +254,7 @@ class AppHandler():
 				)
 			}
 
-		request_records = self._history.call_args_list()
+		request_records = self._history.request_body_list()
 
 		status_code = 200
 		headers = ContentType.APPLICATION_JSON
@@ -275,7 +275,7 @@ class AppHandler():
 				method_called = method[0]
 				path_called = path[0]
 				endpoint_called = (method_called, path_called)
-				count = self._history.call_count(endpoint_called)
+				count = self._history.request_count(endpoint_called)
 				response = self._create_call_count_response(count, endpoint_called)
 			else:
 				response = self._create_missing_query_param_response(KeyError('path'))
@@ -284,7 +284,7 @@ class AppHandler():
 				response = self._create_missing_query_param_response(KeyError('method'))
 			else:
 				# Total call count
-				count = self._history.call_count()
+				count = self._history.request_count()
 				response = self._create_call_count_response(count)
 
 		return response
@@ -295,7 +295,7 @@ class AppHandler():
 
 		body = {
 			"status": 200,
-			"call_count": count
+			"request_count": count
 		}
 		if endpoint:
 			body['method'] = endpoint[0]
@@ -329,7 +329,7 @@ class AppHandler():
 	def _create_assertion_success_response(
 			assert_request: HTTPRequest,
 			endpoint_called: tuple[str, str],
-			call_count: int) -> HTTPResponse:
+			request_count: int) -> HTTPResponse:
 
 		status_code = 200
 		headers = {'Content-Type': 'application/json'}
@@ -337,7 +337,7 @@ class AppHandler():
 			"status": status_code,
 			"type": "assertion-success",
 			"title": f"Assertion request {assert_request.method} {assert_request.path} succeeded",
-			"detail": f"{endpoint_called[0]} {endpoint_called[1]} called {call_count} times."
+			"detail": f"{endpoint_called[0]} {endpoint_called[1]} called {request_count} times."
 		}
 
 		return HTTPResponse(status_code, headers, body)
@@ -347,7 +347,7 @@ class AppHandler():
 			assert_request: HTTPRequest,
 			endpoint_called: tuple[str, str],
 			expected_call_count: int,
-			call_count: int) -> HTTPResponse:
+			request_count: int) -> HTTPResponse:
 
 		status_code = 409
 		headers = {'Content-Type': 'application/json+error'}
@@ -355,7 +355,7 @@ class AppHandler():
 			"status": status_code,
 			"type": "assertion-error",
 			"title": f"Assertion request {assert_request.method} {assert_request.path} failed",
-			"detail": f"Expected {endpoint_called[0]} {endpoint_called[1]} to be called {expected_call_count} times. Called {call_count} times."
+			"detail": f"Expected {endpoint_called[0]} {endpoint_called[1]} to be called {expected_call_count} times. Called {request_count} times."
 		}
 
 		return HTTPResponse(status_code, headers, body)

@@ -38,7 +38,7 @@ class History:
 		self._endpoint_record_mapping[endpoint].append(record)
 
 
-	def call_count(self, endpoint: tuple[str, str] | None = None) -> int:
+	def request_count(self, endpoint: tuple[str, str] | None = None) -> int:
 
 		if endpoint is None:
 			return len(self._request_records)
@@ -46,7 +46,7 @@ class History:
 		return len(self._endpoint_record_mapping.get(endpoint, []))
 
 
-	def call_args(self) -> tuple[str, dict | str | bytes]:
+	def request_body(self) -> tuple[str, dict | str | bytes]:
 		"""
 		
 		Returns:
@@ -65,7 +65,7 @@ class History:
 		return request.headers.get('Content-Type'), request.body
 
 
-	def call_args_list(self)-> list[RequestRecord]:
+	def request_body_list(self)-> list[RequestRecord]:
 
 		return self._request_records
 

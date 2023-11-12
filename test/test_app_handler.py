@@ -61,9 +61,9 @@ def test_handle_request_get_unknown_status_200(stub_config: StubConfig, app_hand
 
 	assert response == stub_config.default_response
 
-	assert len(app_handler.history.call_args_list()) == 1
+	assert len(app_handler.history.request_body_list()) == 1
 
-	request_record = app_handler.history.call_args_list()[0]
+	request_record = app_handler.history.request_body_list()[0]
 	assert request == request_record.request
 	assert response == request_record.response
 
@@ -484,7 +484,7 @@ def test_handle_request_get_call_count_status_200(app_handler: AppHandler):
 	When:
 		- GET /request-count
 	Then:
-		- Response has call_count == 3
+		- Response has request_count == 3
 
 	"""
 	# Arrange
@@ -501,7 +501,7 @@ def test_handle_request_get_call_count_status_200(app_handler: AppHandler):
 	)
 
 	# Assert
-	assert response.body['call_count'] == 3
+	assert response.body['request_count'] == 3
 
 
 def test_handle_request_get_call_count_per_endpoint_status_200(app_handler: AppHandler):
@@ -513,7 +513,7 @@ def test_handle_request_get_call_count_per_endpoint_status_200(app_handler: AppH
 	When:
 		- GET /request-count?method=GET&path=/path/1823
 	Then:
-		- Response has call_count == 2
+		- Response has request_count == 2
 
 	"""
 	# Arrange
@@ -534,7 +534,7 @@ def test_handle_request_get_call_count_per_endpoint_status_200(app_handler: AppH
 	)
 
 	# Assert
-	assert response.body['call_count'] == 2
+	assert response.body['request_count'] == 2
 
 
 def test_handle_request_get_call_args_status_200(app_handler: AppHandler):
