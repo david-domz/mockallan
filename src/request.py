@@ -1,7 +1,6 @@
 from dataclasses import dataclass, field
 
 
-
 class ContentType:
 	TEXT_PLAIN = {'Content-Type': 'text/plain'}
 	APPLICATION_JSON = {'Content-Type': 'application/json'}
@@ -17,6 +16,10 @@ class HTTPRequest:
 	query: dict = field(default_factory=dict)
 	headers: dict = field(default_factory=dict)
 	body: dict | str | bytes = ''
+
+	def __post_init__(self):
+		if self.method not in ('GET', 'POST', 'PUT', 'PATCH', 'DELETE'):
+			raise TypeError(f"'{self.method}': unsupported method")
 
 	@staticmethod
 	def endpoint(request: 'HTTPRequest') -> tuple[str, str]:
