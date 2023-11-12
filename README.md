@@ -146,7 +146,14 @@ If the assertion request returns 200 then everything went fine. If it returns 40
 
 ## Using `/assert-called-with` And `/assert-called-once-with`
 
-Let's explore additional validation options with the `POST /assert-called-with` and `POST /assert-called-once-with` endpoints. The body message provided in these requests corresponds to a `text/plain` body, JSON message, JSON schema, XML schema, or regular expression to match as shown in the following sections.
+Let's explore additional validation options with the `POST /assert-called-with` and `POST /assert-called-once-with` endpoints. The body message provided in these requests corresponds to a
+- `text/plain` message
+- JSON message
+- JSON schema
+- XML schema
+- or a regular expression
+
+to match as shown in the following sections.
 
 
 ### JSON Schema Validation Assertions
