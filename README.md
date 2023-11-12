@@ -74,7 +74,7 @@ Mockallan will reply with the factory default response.
 3) Make assertions on the expected request.
 
 ```bash
-curl "http://localhost:8080/assert-called?method=POST&path=/orders/order_e2b9/products"
+curl -X GET "http://localhost:8080/assert-called?method=POST&path=/orders/order_e2b9/products"
 ```
 
 If the assertion request returns 200 then everything went fine.
@@ -138,7 +138,7 @@ python mockallan.py -c stub_config.json
 4) Make assertions on the expected request.
 
 ```bash
-curl -X GET 'http://localhost:8080/assert-called?method=POST&path=/orders/order_e2b9/products'
+curl -X GET "http://localhost:8080/assert-called?method=POST&path=/orders/order_e2b9/products"
 ```
 
 If the assertion request returns 200 then everything went fine. If it returns 409 then the assertion failed and the system under test did not behave as expected.
@@ -146,7 +146,7 @@ If the assertion request returns 200 then everything went fine. If it returns 40
 
 ## Using `/assert-called-with` And `/assert-called-once-with`
 
-The following validations can be used when performing assertion requests with `POST /assert-called-with` or `POST /assert-called-once-with`. The body message provided in these requests corresponds to a `text/plain` body, JSON message, JSON schema, XML schema, or regular expression to match as shown below.
+Let's explore additional validation options with the `POST /assert-called-with` and `POST /assert-called-once-with` endpoints. The body message provided in these requests corresponds to a `text/plain` body, JSON message, JSON schema, XML schema, or regular expression to match as shown in the following sections.
 
 
 ### JSON Schema Validation Assertions
@@ -157,7 +157,7 @@ E.g.
 
 ```bash
 curl -X POST --header 'Content-Type: application/json+schema'	\
-	http://localhost:8080/assert-called-with?method=POST&path=/orders/order_e2b9/products	\
+	"http://localhost:8080/assert-called-with?method=POST&path=/orders/order_e2b9/products"	\
 	--data '{
 		"$schema": "http://json-schema.org/draft-07/schema#",
 		"type": "object",
@@ -194,7 +194,7 @@ E.g.
 
 ```bash
 curl -X POST --header 'Content-Type: application/xml'	\
-	http://localhost:8080/assert-called-with?method=POST&path=/orders/order_e2b9/products	\
+	"http://localhost:8080/assert-called-with?method=POST&path=/orders/order_e2b9/products"	\
 	--data '<?xml version="1.0" encoding="UTF-8"?>
     <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
         <xs:element name="order">
@@ -227,7 +227,7 @@ E.g.
 
 ```bash
 curl -X POST --header 'X-Mockallan-Validator: regex'	\
-	http://localhost:8080/assert-called-with?method=POST&path=/orders/order_e2b9/products	\
+	"http://localhost:8080/assert-called-with?method=POST&path=/orders/order_e2b9/products"	\
 	--data '{"orderNumber":"\w+","products":\[\{"productId":"\w+","quantity":\d+}(,\{"productId":"\w+","quantity":\d+\})*\]}'
 ```
 
