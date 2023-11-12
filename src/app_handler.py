@@ -25,9 +25,9 @@ class AppHandler():
 			('GET', '/assert-called-once'): self._assert_called_once,
 			('POST', '/assert-called-with'): self._assert_called_with,
 			('POST', '/assert-called-once-with'): self._assert_called_once_with,
-			('GET', '/call-args'): self._call_args,
-			('GET', '/call-args-list'): self._call_args_list,
-			('GET', '/call-count'): self._call_count
+			('GET', '/request-body'): self._request_body,
+			('GET', '/request-body-list'): self._request_body_list,
+			('GET', '/request-count'): self._request_count
 		}
 
 		self._history = history
@@ -204,7 +204,7 @@ class AppHandler():
 		return response
 
 
-	def _call_args(self, request: HTTPRequest) -> HTTPResponse:
+	def _request_body(self, request: HTTPRequest) -> HTTPResponse:
 		"""
 
 		Returns:
@@ -230,7 +230,7 @@ class AppHandler():
 		return HTTPResponse(status_code, headers, body)
 
 
-	def _call_args_list(self, request: HTTPRequest) -> HTTPResponse:
+	def _request_body_list(self, request: HTTPRequest) -> HTTPResponse:
 		"""
 
 		Returns:
@@ -265,7 +265,7 @@ class AppHandler():
 		return HTTPResponse(status_code, headers, records_json)
 
 
-	def _call_count(self, request: HTTPRequest) -> HTTPResponse:	# pylint: disable=unused-argument
+	def _request_count(self, request: HTTPRequest) -> HTTPResponse:	# pylint: disable=unused-argument
 
 		method = request.query.get('method')
 		path = request.query.get('path')

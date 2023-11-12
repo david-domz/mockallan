@@ -482,7 +482,7 @@ def test_handle_request_get_call_count_status_200(app_handler: AppHandler):
 		- 2 GET /path/1823 has been called
 		- 1 GET / has been called
 	When:
-		- GET /call-count
+		- GET /request-count
 	Then:
 		- Response has call_count == 3
 
@@ -496,7 +496,7 @@ def test_handle_request_get_call_count_status_200(app_handler: AppHandler):
 	response = app_handler.handle_request(
 		HTTPRequest(
 			'GET',
-			'/call-count'
+			'/request-count'
 		)
 	)
 
@@ -511,7 +511,7 @@ def test_handle_request_get_call_count_per_endpoint_status_200(app_handler: AppH
 		- 2 GET /path/1823 has been called
 		- 1 GET / has been called
 	When:
-		- GET /call-count?method=GET&path=/path/1823
+		- GET /request-count?method=GET&path=/path/1823
 	Then:
 		- Response has call_count == 2
 
@@ -525,7 +525,7 @@ def test_handle_request_get_call_count_per_endpoint_status_200(app_handler: AppH
 	response = app_handler.handle_request(
 		HTTPRequest(
 			'GET',
-			'/call-count',
+			'/request-count',
 			query={
 				'method': ['GET'],
 				'path': [_PATH_1823]
@@ -543,7 +543,7 @@ def test_handle_request_get_call_args_status_200(app_handler: AppHandler):
 	Given:
 		- 1 request was made
 	When:
-		- GET /call-args
+		- GET /request-body
 	Then:
 		- Response has status 200
 
@@ -563,7 +563,7 @@ def test_handle_request_get_call_args_status_200(app_handler: AppHandler):
 	response = app_handler.handle_request(
 		HTTPRequest(
 			'GET',
-			'/call-args'
+			'/request-body'
 		)
 	)
 	assert response.status_code == 200
@@ -577,7 +577,7 @@ def test_handle_request_get_call_args_status_409(app_handler: AppHandler):
 	Given:
 		- No requests
 	When:
-		- GET /call-args
+		- GET /request-body
 	Then:
 		- Response has status 409
 
@@ -585,7 +585,7 @@ def test_handle_request_get_call_args_status_409(app_handler: AppHandler):
 	response = app_handler.handle_request(
 		HTTPRequest(
 			'GET',
-			'/call-args'
+			'/request-body'
 		)
 	)
 	assert response.status_code == 409
@@ -598,7 +598,7 @@ def test_handle_request_get_call_args_list_status_200(app_handler: AppHandler):
 	Given:
 		- 1 request was made
 	When:
-		- GET /call-args-list
+		- GET /request-body-list
 	Then:
 		- Response has status 200
 
@@ -617,7 +617,7 @@ def test_handle_request_get_call_args_list_status_200(app_handler: AppHandler):
 	response = app_handler.handle_request(
 		HTTPRequest(
 			'GET',
-			'/call-args-list'
+			'/request-body-list'
 		)
 	)
 	assert response.status_code == 200
