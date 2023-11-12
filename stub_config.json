@@ -1,7 +1,7 @@
 {
 	"defaults": {
 		"response": {
-			"code": 200,
+			"status_code": 200,
 			"headers": {
 				"Content-Type": "application/json"
 			},
@@ -18,7 +18,7 @@
 				"path": "/orders/order_e2b9/products"
 			},
 			"response": {
-				"code": 200,
+				"status_code": 200,
 				"headers": {
 					"Content-Type": "application/json"
 				},
@@ -34,7 +34,7 @@
 				"path": "/path/soap/1"
 			},
 			"response": {
-				"code": 200,
+				"status_code": 200,
 				"headers": {
 					"Content-Type": "application/xml"
 				},

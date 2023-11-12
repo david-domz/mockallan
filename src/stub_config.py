@@ -21,7 +21,7 @@ class StubConfig():
 
 	"""
 	_FACTORY_DEFAULT_RESPONSE = HTTPResponse(
-		code=200,
+		status_code=200,
 		headers={
 			"Content-Type": "application/json"
 		},
@@ -106,7 +106,7 @@ class StubConfig():
 	def dump_json(self) -> dict:
 
 		default_response_json = {
-			"code": self._default_response.code,
+			"status_code": self._default_response.status_code,
 			"headers": self._default_response.headers,
 			"body": self._default_response.body
 		}
@@ -121,14 +121,14 @@ class StubConfig():
 				for response_item in response:
 					output_response.append(
 						{
-							"code": response_item.code,
+							"status_code": response_item.status_code,
 							"headers": response_item.headers,
 							"body": response_item.body
 						}
 					)
 			elif isinstance(response, HTTPResponse):
 				output_response = {
-					"code": response.code,
+					"status_code": response.status_code,
 					"headers": response.headers,
 					"body": response.body
 				}

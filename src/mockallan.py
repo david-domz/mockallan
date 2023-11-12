@@ -66,7 +66,7 @@ def http_request_handler_class_factory(app_handler: AppHandler):
 
 		def _write_response(self, response: HTTPResponse):
 
-			self.send_response(response.code)
+			self.send_response(response.status_code)
 			for key, value in response.headers.items():
 				self.send_header(key, value)
 			self.end_headers()

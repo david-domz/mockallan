@@ -3,8 +3,7 @@ import jsonschema
 from request import ContentType, HTTPRequest, HTTPResponse
 from stub_config import (
 	StubConfig,
-	MissingProperty,
-	UnexpectedProperty
+	MissingProperty
 )
 from history import History, RequestRecord
 
@@ -217,18 +216,18 @@ class AppHandler():
 		try:
 			content_type, body = self._history.call_args()
 		except AssertionError:
-			status = 409
+			status_code = 409
 			headers = ContentType.APPLICATION_JSON_ERROR
 			body = {
-				"status": status,
+				"status": status_code,
 				"type": "assertion-error",
 				"title": "No request was performed by the software under test",
 			}
 		else:
-			status = 200
+			status_code = 200
 			headers = {'Content-Type': content_type}
 
-		return HTTPResponse(status, headers, body)
+		return HTTPResponse(status_code, headers, body)
 
 
 	def _call_args_list(self, request: HTTPRequest) -> HTTPResponse:
@@ -251,19 +250,19 @@ class AppHandler():
 					f'{request_record.request.body}'
 				),
 				"response": (
-					f'{request_record.response.code} {request_record.response.body}'
+					f'{request_record.response.status_code} {request_record.response.body}'
 				)
 			}
 
 		request_records = self._history.call_args_list()
 
-		status = 200
+		status_code = 200
 		headers = ContentType.APPLICATION_JSON
 		records_json = {
 			"items": [create_request_record(request_record) for request_record in request_records]
 		}
 
-		return HTTPResponse(status, headers, records_json)
+		return HTTPResponse(status_code, headers, records_json)
 
 
 	def _call_count(self, request: HTTPRequest) -> HTTPResponse:	# pylint: disable=unused-argument
@@ -314,16 +313,16 @@ class AppHandler():
 			assert_request: HTTPRequest,
 			e: jsonschema.SchemaError) -> HTTPResponse:
 
-		status = 400
+		status_code = 400
 		headers = ContentType.APPLICATION_JSON_ERROR
 		body = {
-			"status": status,
+			"status": status_code,
 			"type": "json-schema-error",
 			"title": f"JSON-schema assertion request {assert_request.method} {assert_request.path} failed",
 			"detail": f"{e.__class__.__name__}: {e}"
 		}
 
-		return HTTPResponse(status, headers, body)
+		return HTTPResponse(status_code, headers, body)
 
 
 	@staticmethod
@@ -332,16 +331,16 @@ class AppHandler():
 			endpoint_called: tuple[str, str],
 			call_count: int) -> HTTPResponse:
 
-		status = 200
+		status_code = 200
 		headers = {'Content-Type': 'application/json'}
 		body = {
-			"status": status,
+			"status": status_code,
 			"type": "assertion-success",
 			"title": f"Assertion request {assert_request.method} {assert_request.path} succeeded",
 			"detail": f"{endpoint_called[0]} {endpoint_called[1]} called {call_count} times."
 		}
 
-		return HTTPResponse(status, headers, body)
+		return HTTPResponse(status_code, headers, body)
 
 	@staticmethod
 	def _create_assertion_error_response(
@@ -350,16 +349,16 @@ class AppHandler():
 			expected_call_count: int,
 			call_count: int) -> HTTPResponse:
 
-		status = 409
+		status_code = 409
 		headers = {'Content-Type': 'application/json+error'}
 		body = {
-			"status": status,
+			"status": status_code,
 			"type": "assertion-error",
 			"title": f"Assertion request {assert_request.method} {assert_request.path} failed",
 			"detail": f"Expected {endpoint_called[0]} {endpoint_called[1]} to be called {expected_call_count} times. Called {call_count} times."
 		}
 
-		return HTTPResponse(status, headers, body)
+		return HTTPResponse(status_code, headers, body)
 
 
 	@staticmethod

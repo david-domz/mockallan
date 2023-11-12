@@ -32,7 +32,7 @@ def test_load_json_type_error_response(factory_stub_config: StubConfig):
 			{
 				"defaults": {
 					"response": {
-						"code": 200,
+						"status_code": 200,
 						"headers": {},
 						"body": {},
 						"invalid": "invalid"
@@ -51,7 +51,7 @@ def test_load_json_type_error_request(factory_stub_config: StubConfig):
 			{
 				"defaults": {
 					"response": {
-						"code": 200,
+						"status_code": 200,
 						"headers": {},
 						"body": {},
 					}
@@ -108,7 +108,7 @@ def test_lookup_default_response(stub_config: StubConfig):
 
 	response = stub_config.lookup(HTTPRequest('POST', '/path/unknown'))
 
-	assert response.code == 200
+	assert response.status_code == 200
 	assert response.headers['Content-Type'] == 'application/json'
 	assert response.body == {
 		"status": 200,
@@ -121,6 +121,6 @@ def test_lookup_response(stub_config: StubConfig):
 
 	response = stub_config.lookup(HTTPRequest('POST', '/path/soap/1'))
 
-	assert response.code == 200
+	assert response.status_code == 200
 	assert response.headers['Content-Type'] == 'application/xml'
 	assert response.body == "<SOAP:Envelope xmlns:SOAP=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><SOAP:Body><m:CreateUser><Integer xsi:type=\"xsd:integer\">0</Integer></m:CreateUser></SOAP:Body></SOAP:Envelope>"

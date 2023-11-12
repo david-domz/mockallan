@@ -18,7 +18,7 @@ def test_handle_request_get_config_status_200(app_handler: AppHandler):
 	request = HTTPRequest('GET', '/config')
 	response = app_handler.handle_request(request)
 
-	assert response.code == 200
+	assert response.status_code == 200
 
 
 def test_handle_request_put_config_status_204(app_handler: AppHandler):
@@ -31,7 +31,7 @@ def test_handle_request_put_config_status_204(app_handler: AppHandler):
 		body={
 			"defaults": {
 				"response": {
-					"code": 204,
+					"status_code": 204,
 					"headers": {
 						"Content-Type": "application/json"
 					},
@@ -43,7 +43,7 @@ def test_handle_request_put_config_status_204(app_handler: AppHandler):
 	)
 	response = app_handler.handle_request(request)
 
-	assert response.code == 204
+	assert response.status_code == 204
 
 
 def test_handle_request_get_unknown_status_200(stub_config: StubConfig, app_handler: AppHandler):
@@ -96,7 +96,7 @@ def test_handle_request_get_assert_called_status_200(stub_config: StubConfig, ap
 	response = app_handler.handle_request(assert_called_request)
 
 	# Assert
-	assert response.code == 200
+	assert response.status_code == 200
 	assert response.body['type'] == 'assertion-success'
 
 
@@ -121,7 +121,7 @@ def test_handle_request_get_assert_called_status_409(stub_config: StubConfig, ap
 	)
 	response = app_handler.handle_request(assert_called_request)
 
-	assert response.code == 409
+	assert response.status_code == 409
 	assert response.body['type'] == 'assertion-error'
 
 
@@ -144,7 +144,7 @@ def test_handle_request_get_assert_called_status_400_missing_query_param(stub_co
 	)
 	response = app_handler.handle_request(assert_called_request)
 
-	assert response.code == 400
+	assert response.status_code == 400
 	assert response.body['type'] == 'missing-query-param'
 
 
@@ -177,7 +177,7 @@ def test_handle_request_get_assert_called_once_status_200(stub_config: StubConfi
 	)
 	response = app_handler.handle_request(assert_called_request)
 
-	assert response.code == 200
+	assert response.status_code == 200
 	assert response.body['type'] == 'assertion-success'
 
 
@@ -209,7 +209,7 @@ def test_handle_request_get_assert_called_once_status_409(app_handler: AppHandle
 	)
 
 	# Assert
-	assert response.code == 409
+	assert response.status_code == 409
 	assert response.body['type'] == 'assertion-error'
 
 
@@ -240,7 +240,7 @@ def test_handle_request_get_assert_called_once_status_400_missing_query_param(ap
 	)
 
 	# Assert
-	assert response.code == 400
+	assert response.status_code == 400
 	assert response.body['type'] == 'missing-query-param'
 
 
@@ -278,7 +278,7 @@ def test_handle_request_get_assert_called_with_status_200(app_handler: AppHandle
 	response = app_handler.handle_request(assert_called_request)
 
 	# Assert
-	assert response.code == 200
+	assert response.status_code == 200
 	assert response.body['type'] == 'assertion-success'
 
 
@@ -315,7 +315,7 @@ def test_handle_request_get_assert_called_with_status_409(app_handler: AppHandle
 	)
 	assert_called_response = app_handler.handle_request(assert_called_request)
 
-	assert assert_called_response.code == 409
+	assert assert_called_response.status_code == 409
 	assert assert_called_response.body['type'] == 'assertion-error'
 
 
@@ -352,7 +352,7 @@ def test_handle_request_get_assert_called_with_status_400_missing_query_param(ap
 	)
 	response = app_handler.handle_request(assert_called_request)
 
-	assert response.code == 400
+	assert response.status_code == 400
 	assert response.body['type'] == 'missing-query-param'
 
 
@@ -393,7 +393,7 @@ def test_handle_request_get_assert_called_with_status_400_json_schema_error(app_
 	)
 	response = app_handler.handle_request(assert_called_request)
 
-	assert response.code == 400
+	assert response.status_code == 400
 	assert response.headers['Content-Type'] == 'application/json+error'
 	assert response.body['type'] == 'json-schema-error'
 
@@ -435,7 +435,7 @@ def test_handle_request_get_assert_called_once_with_status_200(app_handler: AppH
 	)
 	assert_called_response = app_handler.handle_request(assert_called_request)
 
-	assert assert_called_response.code == 200
+	assert assert_called_response.status_code == 200
 
 
 def test_handle_request_get_assert_called_once_with_status_409(app_handler: AppHandler):
@@ -471,7 +471,7 @@ def test_handle_request_get_assert_called_once_with_status_409(app_handler: AppH
 	)
 	assert_called_response = app_handler.handle_request(assert_called_request)
 
-	assert assert_called_response.code == 409
+	assert assert_called_response.status_code == 409
 	assert assert_called_response.body['type'] == 'assertion-error'
 
 
@@ -566,7 +566,7 @@ def test_handle_request_get_call_args_status_200(app_handler: AppHandler):
 			'/call-args'
 		)
 	)
-	assert response.code == 200
+	assert response.status_code == 200
 	assert response.headers['Content-Type'] == request_content_type
 	assert response.body == request_body
 
@@ -588,7 +588,7 @@ def test_handle_request_get_call_args_status_409(app_handler: AppHandler):
 			'/call-args'
 		)
 	)
-	assert response.code == 409
+	assert response.status_code == 409
 	assert response.headers['Content-Type'] == 'application/json+error'
 
 
@@ -620,7 +620,7 @@ def test_handle_request_get_call_args_list_status_200(app_handler: AppHandler):
 			'/call-args-list'
 		)
 	)
-	assert response.code == 200
+	assert response.status_code == 200
 	assert response.headers['Content-Type'] == 'application/json'
 	assert len(response.body['items']) == 1
 
