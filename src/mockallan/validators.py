@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import re
 from lxml import etree
 import jsonschema
-from request import HTTPRequest
+from .request import HTTPRequest
 
 
 class Validator(ABC):

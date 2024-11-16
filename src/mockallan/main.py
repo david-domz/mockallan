@@ -3,21 +3,20 @@ import logging
 import json
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import urllib.parse
-from request import HTTPRequest, HTTPResponse, ContentType
-from stub_config import StubConfig
-from app_handler import AppHandler
+from .request import HTTPRequest, HTTPResponse, ContentType
+from .stub_config import StubConfig
+from .app_handler import AppHandler
 
-
-VERSION = '0.1.0'
+__version__ = '0.1.1'
 
 __all__ = ['MockHTTPServer']
 
 
 def http_request_handler_class_factory(app_handler: AppHandler):
-	"""Returns the HTTPRequestHandler class parametrized with `app_handler`.
+	"""Returns the MockHTTPRequestHandler class parametrized with `app_handler`.
 
 	"""
-	class HTTPRequestHandler(BaseHTTPRequestHandler):
+	class MockHTTPRequestHandler(BaseHTTPRequestHandler):
 
 		def __init__(self, request, client_address, server):
 
@@ -92,7 +91,7 @@ def http_request_handler_class_factory(app_handler: AppHandler):
 				}
 			)
 
-	return HTTPRequestHandler
+	return MockHTTPRequestHandler
 
 
 class MockHTTPServer():
@@ -117,7 +116,7 @@ class MockHTTPServer():
 
 
 def main():
-	argparse = ArgumentParser(description=f'Mockallan HTTP server mock ver. {VERSION}')
+	argparse = ArgumentParser(description=f'Mockallan HTTP server mock ver. {__version__}')
 	argparse.add_argument("-H", "--host", type=str, metavar="HOST", dest="host", default="0.0.0.0")
 	argparse.add_argument("-p", "--port", type=int, metavar="PORT", dest="port", default=8080)
 	argparse.add_argument("-c", "--stub-config", type=str, metavar="STUB_CONFIG", dest="stub_config_json")

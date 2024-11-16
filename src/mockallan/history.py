@@ -1,8 +1,8 @@
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
-from request import HTTPRequest, HTTPResponse
-from validators import (
+from .request import HTTPRequest, HTTPResponse
+from .validators import (
 	Validator,
 	IsEqualValidator,
 	JSONSchemaValidator,

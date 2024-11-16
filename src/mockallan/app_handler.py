@@ -1,11 +1,11 @@
 import json
 import jsonschema
-from request import ContentType, HTTPRequest, HTTPResponse
-from stub_config import (
+from .request import ContentType, HTTPRequest, HTTPResponse
+from .stub_config import (
 	StubConfig,
 	MissingProperty
 )
-from history import History, RequestRecord
+from .history import History, RequestRecord
 
 
 class AppHandler():

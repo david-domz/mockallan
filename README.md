@@ -1,32 +1,28 @@
-<!-- # Mockallan - Lightweight HTTP Server Mock -->
-
 ![image](mockallan.png)
 
 [![PyPI package version](https://badge.fury.io/py/mockallan.svg)](https://pypi.org/project/mockallan/) [![Supported Python versions](https://img.shields.io/pypi/pyversions/mockallan.svg)](https://pypi.org/project/mockallan/) [![Python package](https://github.com/david-domz/mockallan/actions/workflows/python-package.yml/badge.svg)](https://github.com/david-domz/mockallan/actions/workflows/python-package.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=david-domz_mockallan&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=david-domz_mockallan)
 
-Mockallan is a lightweight HTTP server mock for CI and testing environments.
+Mockallan is a lightweight HTTP server mock for CI and test environments.
 
 
 ## Highlights
 
-- Command-line interface for CI and testing environments.
+- Command line interface for CI and test environments.
 
-- Configurable default and per-endpoint responses.
+- Configurable default and per endpoint responses.
 
-- Assert expected requests performed by the system under test based on the endpoint and the request body.
+- Robust assertion capabilities.
 
-- Match the request body in assertions based on
-  - text/plain message matching
+- Request body matching in assertions based on
+  - Text matching
   - JSON message matching
   - JSON schema validation
   - XML schema validation
   - Regular expression matching
 
-- Request history enables robust assertion capabilities.
+- Concise codebase with a focus on simplicity.
 
-- Concise codebase focusing on simplicity.
-
-- API naming inspired by the `Mock` class from the Python `unittest.mock` standard library.
+- API naming inspired by the `Mock` class from the standard Python `unittest.mock` library.
 
 ## Requirements
 
@@ -40,6 +36,8 @@ Mockallan is available on [PyPI](https://pypi.org/project/mockallan/). Install i
 pip install mockallan
 ```
 
+Creating and activating a virtual environment first is recommended. Alternatively, see [mockallan-docker](https://github.com/david-domz/mockallan-docker) repository to run Mockallan in a docker container. 
+
 ## Getting Started
 
 
@@ -52,7 +50,7 @@ Listening on 0.0.0.0:8080
 
 2) Run the system under test.
 
-You can use `curl` to simulate a request performed by the system under test. For example, if we expect our system under test to perform a `POST /orders/order_e2b9/products`, run the following `curl` command.
+You can use `curl` to simulate a request performed by the system under test. For example, if we expect our system under test to perform a `POST /orders/order_e2b9/products`, we would run the following `curl` command.
 
 ```bash
 curl -s -X POST http://localhost:8080/orders/order_e2b9/products --data '{
@@ -67,7 +65,7 @@ Mockallan will reply with the factory default response.
 ```json
 {
 	"status": "200",
-	"message": "This is mockallan factory default response."
+	"message": "This is mockallan's factory default response."
 }
 ```
 
@@ -77,7 +75,7 @@ Mockallan will reply with the factory default response.
 curl -X GET "http://localhost:8080/assert-called?method=POST&path=/orders/order_e2b9/products"
 ```
 
-If the assertion request returns 200 then everything went fine.
+If the assertion request returns 200 then everything went well.
 
 ```json
 {
@@ -146,12 +144,12 @@ If the assertion request returns 200 then everything went fine. If it returns 40
 
 ## Using `/assert-called-with` And `/assert-called-once-with`
 
-Let's explore additional validation options with the `POST /assert-called-with` and `POST /assert-called-once-with` endpoints. The body message provided in these requests corresponds to a
-- `text/plain` message
+Let's explore additional validation options using the `POST /assert-called-with` and `POST /assert-called-once-with` endpoints. The body message provided in these requests corresponds to a
+- Text message
 - JSON message
 - JSON schema
 - XML schema
-- or a regular expression
+- or a regular expression string
 
 to match as shown in the following sections.
 
@@ -305,14 +303,10 @@ The Assertion API allows for the validation of expected requests.
 |GET|/request-count|-|-|200 OK|Request count|
 
 
-## Naming
-
-Stub Configuration API and Assertion API naming are inspired by class `Mock` from the standard python package `unittest.mock`.
-
 
 ## Contributing
 
-Found a bug, facing some unexpected quirks, or got ideas for making this project better? Don't hesitate to [raise an issue](https://github.com/david-domz/mockallan/issues). Your help is appreciated.
+Found a bug or have ideas on how to make this project better? Don't hesitate to [raise an issue](https://github.com/david-domz/mockallan/issues).
 
 
 ## License

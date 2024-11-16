@@ -1,5 +1,5 @@
 import json
-from request import HTTPRequest, HTTPResponse
+from .request import HTTPRequest, HTTPResponse
 
 
 class MissingProperty(Exception):
@@ -27,7 +27,7 @@ class StubConfig():
 		},
 		body={
 			"status": "200",
-			"message": "This is mockallan factory default response."
+			"message": "This is mockallan's factory default response."
 		}
 	)
 
