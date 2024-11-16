@@ -1,5 +1,5 @@
 import pytest
-from app_handler import HTTPRequest, History
+from mockallan.app_handler import HTTPRequest, History
 
 
 def test_request_count_empty_history(empty_history: History):

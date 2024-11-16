@@ -1,7 +1,7 @@
 from pytest import fixture
-from request import HTTPRequest, HTTPResponse, ContentType
-from stub_config import StubConfig
-from app_handler import History
+from mockallan.request import HTTPRequest, HTTPResponse, ContentType
+from mockallan.stub_config import StubConfig
+from mockallan.app_handler import History
 
 
 @fixture

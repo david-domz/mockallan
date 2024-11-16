@@ -1,5 +1,5 @@
 import pytest
-from app_handler import HTTPRequest, History
+from mockallan.app_handler import HTTPRequest, History
 
 
 def test_assert_called_once_with_json_success(history: History):

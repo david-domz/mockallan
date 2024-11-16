@@ -1,6 +1,6 @@
 from pytest import fixture
-from request import ContentType, HTTPRequest
-from app_handler import AppHandler, StubConfig
+from mockallan.request import ContentType, HTTPRequest
+from mockallan.app_handler import AppHandler, StubConfig
 
 
 _PATH_1823 = '/path/1823'

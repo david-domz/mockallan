@@ -1,6 +1,6 @@
 import pytest
 import json
-from stub_config import StubConfig, MissingProperty, HTTPRequest, HTTPResponse
+from mockallan.stub_config import StubConfig, MissingProperty, HTTPRequest, HTTPResponse
 
 
 def test_load_json_property_not_found_defaults(factory_stub_config: StubConfig):

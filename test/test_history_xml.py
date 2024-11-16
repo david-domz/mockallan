@@ -1,6 +1,6 @@
 import pytest
-from request import ContentType, HTTPRequest
-from app_handler import History
+from mockallan.request import ContentType, HTTPRequest
+from mockallan.app_handler import History
 
 
 def test_assert_called_once_with_xml_schema_success(history: History):
