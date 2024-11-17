@@ -15,7 +15,6 @@ NOTE: Diagrams in PlantUML. Clone or download the repo and use the PlantUML VSCo
 		- [Software Under Test Requests](#software-under-test-requests)
 		- [Stub Configuration Requests](#stub-configuration-requests)
 		- [Assertion Requests](#assertion-requests)
-	- [Conclusion](#conclusion)
 
 
 ## Introduction
@@ -30,7 +29,7 @@ The infrastructure layer consists of the `MockHTTPServer` and `MockHTTPRequestHa
 
 Infrastructure classes depend on the standard Python `http.server` package, which provides the `HTTPServer` and `BaseHTTPRequestHandler` classes.
 
-The application layer contains the core business logic. This layer is decoupled from the infrastructure code.
+The application layer contains the core business logic. This layer is decoupled from the infrastructure code, making the code maintainable, testable and extensible for future enhancements.
 
 
 ```plantuml
@@ -287,11 +286,3 @@ package mockallan <<rectangle>> {
 
 @enduml
 ```
-
-## Conclusion
-
-Mockallan has been designed with flexibility and simplicity in mind.
-
-Using Python's standard `http.server` package, it provides a lightweight and efficient HTTP server for test environments.
-
-It separates its infrastructure concerns from the core application logic, making it maintainable, testable and easily extensible for future enhancements.

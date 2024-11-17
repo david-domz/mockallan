@@ -1,4 +1,7 @@
-![image](mockallan.png)
+<center>
+	<img src="mockallan.jpg" alt="image">
+</center>
+
 
 [![PyPI package version](https://badge.fury.io/py/mockallan.svg)](https://pypi.org/project/mockallan/) [![Supported Python versions](https://img.shields.io/pypi/pyversions/mockallan.svg)](https://pypi.org/project/mockallan/) [![Python package](https://github.com/david-domz/mockallan/actions/workflows/python-package.yml/badge.svg)](https://github.com/david-domz/mockallan/actions/workflows/python-package.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=david-domz_mockallan&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=david-domz_mockallan)
 
@@ -50,7 +53,7 @@ Listening on 0.0.0.0:8080
 
 2) Run the system under test.
 
-You can use `curl` to simulate a request performed by the system under test. For example, if we expect our system under test to perform a `POST /orders/order_e2b9/products`, we would run the following `curl` command.
+Use `curl` to simulate a request performed by the system under test. For example, if we expect our system under test to perform a `POST /orders/order_e2b9/products`, we would run the following `curl` command.
 
 ```bash
 curl -s -X POST http://localhost:8080/orders/order_e2b9/products --data '{
@@ -144,7 +147,7 @@ If the assertion request returns 200 then everything went fine. If it returns 40
 
 ## Using `/assert-called-with` And `/assert-called-once-with`
 
-Let's explore additional validation options using the `POST /assert-called-with` and `POST /assert-called-once-with` endpoints. The body message provided in these requests corresponds to a
+Additional validation options are available using the `POST /assert-called-with` and `POST /assert-called-once-with` endpoints. The body message provided in these requests corresponds to a
 - Text message
 - JSON message
 - JSON schema
@@ -303,11 +306,11 @@ The Assertion API allows for the validation of expected requests.
 |GET|/request-count|-|-|200 OK|Request count|
 
 
+## Feedback
 
-## Contributing
+Please submit feedback, ideas and bug reports by [creating an issue](https://github.com/david-domz/mockallan/issues) or [startint a new discussion](https://github.com/david-domz/mockallan/discussions).
 
-Please submit feedback, ideas and bug reports by [creating a new issue](https://github.com/david-domz/mockallan/issues).
-
+Feel free to give this repository a ⭐ if you find it helpful.
 
 ## License
 
