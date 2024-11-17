@@ -1,4 +1,6 @@
-<img src="mockallan.jpg" alt="image" style="display: block; margin: auto;">
+<div align="center">
+  <img src="mockallan.jpg" alt="logo">
+</div>
 
 
 [![PyPI package version](https://badge.fury.io/py/mockallan.svg)](https://pypi.org/project/mockallan/) [![Supported Python versions](https://img.shields.io/pypi/pyversions/mockallan.svg)](https://pypi.org/project/mockallan/) [![Python package](https://github.com/david-domz/mockallan/actions/workflows/python-package.yml/badge.svg)](https://github.com/david-domz/mockallan/actions/workflows/python-package.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=david-domz_mockallan&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=david-domz_mockallan)
