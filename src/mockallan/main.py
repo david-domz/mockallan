@@ -92,6 +92,9 @@ def http_request_handler_class_factory(app_handler: AppHandler):
 				}
 			)
 
+		def version_string(self):
+			return f'Mockallan/{__version__}'
+
 	return MockHTTPRequestHandler
 
 
