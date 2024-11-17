@@ -310,8 +310,6 @@ The Assertion API allows for the validation of expected requests.
 
 Please submit feedback, ideas and bug reports by [creating an issue](https://github.com/david-domz/mockallan/issues) or [startint a new discussion](https://github.com/david-domz/mockallan/discussions).
 
-Feel free to give this repository a ⭐ if you find it helpful.
-
 ## License
 
 This project is licensed under the terms of the MIT license.
