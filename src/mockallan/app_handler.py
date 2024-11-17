@@ -1,3 +1,4 @@
+from typing import Optional, Tuple
 import json
 import jsonschema
 from .request import ContentType, HTTPRequest, HTTPResponse
@@ -10,7 +11,7 @@ from .history import History, RequestRecord
 
 class AppHandler():
 
-	def __init__(self, config: StubConfig, history: History | None = None):
+	def __init__(self, config: StubConfig, history: Optional[History] = None):
 
 		if history is None:
 			history = History()
@@ -48,7 +49,7 @@ class AppHandler():
 		return response
 
 
-	def _handle_api_request(self, request: HTTPRequest) -> HTTPResponse | None:
+	def _handle_api_request(self, request: HTTPRequest) -> Optional[HTTPResponse]:
 		"""Handles Stub Configuration/Assertion API request by the test client. """
 
 		endpoint = (request.method.upper(), request.path)
@@ -291,7 +292,7 @@ class AppHandler():
 
 
 	@staticmethod
-	def _create_call_count_response(count: int, endpoint: tuple[str, str] | None = None) -> HTTPResponse:
+	def _create_call_count_response(count: int, endpoint: Optional[Tuple[str, str]] = None) -> HTTPResponse:
 
 		body = {
 			"status": 200,
@@ -328,7 +329,7 @@ class AppHandler():
 	@staticmethod
 	def _create_assertion_success_response(
 			assert_request: HTTPRequest,
-			endpoint_called: tuple[str, str],
+			endpoint_called: Tuple[str, str],
 			request_count: int) -> HTTPResponse:
 
 		status_code = 200
@@ -345,7 +346,7 @@ class AppHandler():
 	@staticmethod
 	def _create_assertion_error_response(
 			assert_request: HTTPRequest,
-			endpoint_called: tuple[str, str],
+			endpoint_called: Tuple[str, str],
 			expected_call_count: int,
 			request_count: int) -> HTTPResponse:
 

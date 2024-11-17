@@ -1,3 +1,4 @@
+from typing import Tuple, List, Union, Optional
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
@@ -20,7 +21,7 @@ class RequestRecord:
 
 class History:
 
-	def __init__(self, requests_responses: list[tuple[HTTPRequest, HTTPResponse]] | None = None):
+	def __init__(self, requests_responses: Optional[List[Tuple[HTTPRequest, HTTPResponse]]] = None):
 
 		self._request_records = []
 		self._endpoint_record_mapping = defaultdict(list)
@@ -38,7 +39,7 @@ class History:
 		self._endpoint_record_mapping[endpoint].append(record)
 
 
-	def request_count(self, endpoint: tuple[str, str] | None = None) -> int:
+	def request_count(self, endpoint: Optional[Tuple[str, str]] = None) -> int:
 
 		if endpoint is None:
 			return len(self._request_records)
@@ -46,12 +47,12 @@ class History:
 		return len(self._endpoint_record_mapping.get(endpoint, []))
 
 
-	def request_body(self) -> tuple[str, dict | str | bytes]:
+	def request_body(self) -> Tuple[str, Union[dict, str, bytes]]:
 		"""
 		
 		Returns:
 			Content-Type (str)
-			body (dict | str | bytes)
+			body (Union[dict, str, bytes])
 
 		Raises:
 			AssertionError	If no request was recorded yet.
@@ -65,19 +66,19 @@ class History:
 		return request.headers.get('Content-Type'), request.body
 
 
-	def request_body_list(self)-> list[RequestRecord]:
+	def request_body_list(self)-> List[RequestRecord]:
 
 		return self._request_records
 
 
-	def assert_called(self, endpoint: tuple[str, str]):
+	def assert_called(self, endpoint: Tuple[str, str]):
 		"""Assert that the endpoint was called at least once. """
 
 		if self._endpoint_record_mapping.get(endpoint) is None:
 			raise AssertionError('Not called')
 
 
-	def assert_called_once(self, endpoint: tuple[str, str]):
+	def assert_called_once(self, endpoint: Tuple[str, str]):
 		"""Assert that the mock was called exactly once. """
 
 		records = self._endpoint_record_mapping.get(endpoint)
@@ -88,7 +89,7 @@ class History:
 			raise AssertionError('Called more than once')
 
 
-	def assert_called_with(self, endpoint: tuple[str, str], request: HTTPRequest):
+	def assert_called_with(self, endpoint: Tuple[str, str], request: HTTPRequest):
 
 		records = self._endpoint_record_mapping.get(endpoint)
 		if records is None:
@@ -102,7 +103,7 @@ class History:
 		raise AssertionError('Not called')
 
 
-	def assert_called_once_with(self, endpoint: tuple[str, str], request: HTTPRequest):
+	def assert_called_once_with(self, endpoint: Tuple[str, str], request: HTTPRequest):
 
 		match_count = 0
 

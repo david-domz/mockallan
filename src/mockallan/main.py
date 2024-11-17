@@ -1,3 +1,4 @@
+from typing import Union, Optional
 from argparse import ArgumentParser
 import logging
 import json
@@ -100,7 +101,7 @@ class MockHTTPServer():
 	Configurable at initialization time from a JSON file or python dict. Configurable at run time via REST API.
 
 	"""
-	def __init__(self, server_address, stub_config_json: dict | str | None):
+	def __init__(self, server_address, stub_config_json: Optional[Union[dict, str]]):
 
 		stub_config = StubConfig(stub_config_json)
 		app_handler = AppHandler(stub_config)

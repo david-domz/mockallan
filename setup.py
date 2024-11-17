@@ -31,11 +31,11 @@ setup(
 	extras_require={
 		"dev": [
 			'pytest>=7.4.2',
-			'coverage==7.6.7',
+			'coverage>=6.0',
 			'twine>=4.0.2'
 		]
 	},
-	python_requires='>=3.10, <4',
+	python_requires='>=3.8, <4',
 	entry_points={
 		"console_scripts": [
 			"mockallan = mockallan.main:main"

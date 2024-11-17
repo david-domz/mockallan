@@ -1,3 +1,4 @@
+from typing import Union, Tuple
 from dataclasses import dataclass, field
 
 
@@ -15,14 +16,14 @@ class HTTPRequest:
 	path: str
 	query: dict = field(default_factory=dict)
 	headers: dict = field(default_factory=dict)
-	body: dict | str | bytes = ''
+	body: Union[dict, str, bytes] = ''
 
 	def __post_init__(self):
 		if self.method not in ('GET', 'POST', 'PUT', 'PATCH', 'DELETE'):
 			raise TypeError(f"'{self.method}': unsupported method")
 
 	@staticmethod
-	def endpoint(request: 'HTTPRequest') -> tuple[str, str]:
+	def endpoint(request: 'HTTPRequest') -> Tuple[str, str]:
 		return (request.method.upper(), request.path)
 
 
@@ -30,7 +31,7 @@ class HTTPRequest:
 class HTTPResponse:
 	status_code: int
 	headers: dict = field(default_factory=dict)
-	body: dict | str | bytes = ''
+	body: Union[dict, str, bytes] = ''
 
 	def __post_init__(self):
 		if not isinstance(self.status_code, int):

@@ -1,3 +1,4 @@
+from typing import Union, Optional, List
 import json
 from .request import HTTPRequest, HTTPResponse
 
@@ -17,7 +18,7 @@ class StubConfig():
 
 	Attributes:
 		_default_response (HTTPResponse):			Default response.
-		_endpoints (dict[tuple[str, str], HTTPResponse]):	Per-endpoint response mapping.
+		_endpoints (Dict[Tuple[str, str], HTTPResponse]):	Per-endpoint response mapping.
 
 	"""
 	_FACTORY_DEFAULT_RESPONSE = HTTPResponse(
@@ -35,7 +36,7 @@ class StubConfig():
 		"""
 
 		Args:
-			config_json (dict | str):	If type is a `str` then it is the path to a stub config JSON file.
+			config_json (Union[dict, str]):	If type is a `str` then it is the path to a stub config JSON file.
 
 		"""
 		self._default_response = StubConfig._FACTORY_DEFAULT_RESPONSE
@@ -86,7 +87,7 @@ class StubConfig():
 
 
 	@staticmethod
-	def _load_response_json(endpoint_json: dict) -> HTTPResponse | list[HTTPResponse]:
+	def _load_response_json(endpoint_json: dict) -> Union[HTTPResponse, List[HTTPResponse]]:
 
 		try:
 			response_json = endpoint_json['response']
@@ -95,7 +96,7 @@ class StubConfig():
 
 		if isinstance(response_json, dict):
 			response = HTTPResponse(**response_json)
-		elif isinstance(response_json, list):
+		elif isinstance(response_json, List):
 			response = [HTTPResponse(**response_json_item) for response_json_item in response_json]
 		else:
 			raise ValueError(f'Error loading response JSON element. Invalid type {type(response_json)}')
@@ -116,7 +117,7 @@ class StubConfig():
 			method = endpoint[0]
 			path = endpoint[1]
 
-			if isinstance(response, list):
+			if isinstance(response, List):
 				output_response = []
 				for response_item in response:
 					output_response.append(
@@ -150,7 +151,7 @@ class StubConfig():
 		}
 
 
-	def lookup(self, request: HTTPRequest) -> HTTPResponse | None:
+	def lookup(self, request: HTTPRequest) -> Optional[HTTPResponse]:
 
 		endpoint = HTTPRequest.endpoint(request)
 		response =  self._endpoints.get(endpoint)
