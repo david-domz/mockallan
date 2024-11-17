@@ -20,13 +20,13 @@ Mockallan is a lightweight HTTP server mock for CI and test environments.
   - XML schema validation
   - Regular expression matching
 
-- Concise codebase with a focus on simplicity.
+- Concise codebase.
 
 - API naming inspired by the `Mock` class from the standard Python `unittest.mock` library.
 
 ## Requirements
 
-- Python >= 3.10
+- Python >= 3.8
 
 ## Installation
 
@@ -306,7 +306,7 @@ The Assertion API allows for the validation of expected requests.
 
 ## Contributing
 
-Found a bug or have ideas on how to make this project better? Don't hesitate to [raise an issue](https://github.com/david-domz/mockallan/issues).
+Please submit feedback, ideas and bug reports by [creating a new issue](https://github.com/david-domz/mockallan/issues).
 
 
 ## License
