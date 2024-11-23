@@ -317,5 +317,5 @@ This project is licensed under the terms of the MIT license.
 
 ## Related Projects
 
-- [mockallan-docker](https://github.com/david-domz/mockallan-docker) - Containerized lightweight HTTP server mock.
+- [mockallan-docker](https://github.com/david-domz/mockallan-docker) - Containerized Mockallan.
 - [mockallan-python-client](https://github.com/david-domz/mockallan-python-client) - Mockallan python client class.

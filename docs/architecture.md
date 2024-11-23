@@ -1,6 +1,6 @@
 # Mockallan Architecture
 
-NOTE: Diagrams in PlantUML. Clone or download the repo and use the PlantUML VSCode extension (extension ID: jebbs.plantuml) to display them or visit https://plantuml.com/ for more information.
+NOTE: Diagrams in PlantUML. Clone or download the repo and use the PlantUML VSCode extension (extension ID: `jebbs.plantuml`) to display them or visit https://plantuml.com/ for more information.
 
 ## Table of Contents
 

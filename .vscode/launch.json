@@ -1,0 +1,47 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Python: Module",
+			"type": "debugpy",
+			"request": "launch",
+			"module": "mockallan.main",
+			"justMyCode": false,
+			"args": [
+			],
+			"env": {
+			}
+		},
+		{
+			"name": "-c stub_config.json",
+			"type": "debugpy",
+			"request": "launch",
+			"module": "mockallan",
+			"justMyCode": true,
+			"args": [
+				"-c",
+				"stub_config.json"
+			],
+			"env": {
+			}
+		},
+		{
+			"name": "-c CM.json",
+			"type": "debugpy",
+			"request": "launch",
+			"module": "mockallan",
+			"justMyCode": true,
+			"args": [
+				"-p",
+				"10500",
+				"-c",
+				"CM.json"
+			],
+			"env": {
+			}
+		}
+	]
+}
