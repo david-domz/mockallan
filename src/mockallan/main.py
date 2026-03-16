@@ -8,7 +8,7 @@ from .request import HTTPRequest, HTTPResponse, ContentType
 from .stub_config import StubConfig
 from .app_handler import AppHandler
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 __all__ = ['MockHTTPServer']
 
@@ -18,6 +18,8 @@ def http_request_handler_class_factory(app_handler: AppHandler):
 
 	"""
 	class MockHTTPRequestHandler(BaseHTTPRequestHandler):
+
+		protocol_version = "HTTP/1.1"
 
 		def __init__(self, request, client_address, server):
 
@@ -69,13 +71,16 @@ def http_request_handler_class_factory(app_handler: AppHandler):
 			self.send_response(response.status_code)
 			for key, value in response.headers.items():
 				self.send_header(key, value)
-			self.end_headers()
 
 			if isinstance(response.body, dict):
 				response.body = json.dumps(response.body)
 
+			body_bytes = response.body.encode('utf-8')
+			self.send_header('Content-Length', str(len(body_bytes)))
+			self.end_headers()
+
 			try:
-				self.wfile.write(response.body.encode('utf-8'))
+				self.wfile.write(body_bytes)
 			except ConnectionError as e:
 				logging.warning('`%s` was raised while writting the socket: %s', e.__class__.__name__, e)
 
