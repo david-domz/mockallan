@@ -1,5 +1,8 @@
 from setuptools import setup, find_packages
-from mockallan import __version__
+import re
+
+with open('src/mockallan/main.py', encoding='utf-8') as f:
+    __version__ = re.search(r"^__version__ = '([^']+)'", f.read(), re.M).group(1)
 
 
 with open('README.md', 'r', encoding='utf-8') as f:
